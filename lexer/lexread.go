@@ -9,6 +9,19 @@ func (l *Lexer) EatWhitespaces() {
 	}
 }
 
+// A method of Lexer that returns the next character
+// of the lexer input without advancing the cursor
+func (l *Lexer) PeekChar() byte {
+	// Check cursor is at the last character
+	if l.positionNext >= len(l.input) {
+		// Return EOF
+		return 0
+	} else {
+		// Return the next character
+		return l.input[l.positionNext]
+	}
+}
+
 // A method of Lexer that reads a single character from
 // the lexer input and moves lexer to the next character
 func (l *Lexer) ReadChar() {

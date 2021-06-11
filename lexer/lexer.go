@@ -38,7 +38,41 @@ func (l *Lexer) NextToken() Token {
 	// Check the value of the character read by the lexer
 	switch l.ch {
 	case '=':
-		tok = NewToken(ASSIGN, l.ch)
+		// Check if the next character is a '='
+		if l.PeekChar() == '=' {
+			// Move lexer to the next character
+			l.ReadChar()
+			// Set the token value to '=='
+			tok = Token{Type: EQ, Literal: "=="}
+
+		} else {
+			// Set the token value to '='
+			tok = NewToken(ASSIGN, l.ch)
+		}
+	case '!':
+		// Check if the next character is a '='
+		if l.PeekChar() == '=' {
+			// Move lexer to the next character
+			l.ReadChar()
+			// Set the token value to '!='
+			tok = Token{Type: NOT_EQ, Literal: "!="}
+
+		} else {
+			// Set the token value to '!'
+			tok = NewToken(BANG, l.ch)
+		}
+	case '+':
+		tok = NewToken(PLUS, l.ch)
+	case '-':
+		tok = NewToken(MINUS, l.ch)
+	case '/':
+		tok = NewToken(SLASH, l.ch)
+	case '*':
+		tok = NewToken(ASTERISK, l.ch)
+	case '<':
+		tok = NewToken(LT, l.ch)
+	case '>':
+		tok = NewToken(GT, l.ch)
 	case ';':
 		tok = NewToken(SEMICOLON, l.ch)
 	case '(':
@@ -47,8 +81,6 @@ func (l *Lexer) NextToken() Token {
 		tok = NewToken(RPAREN, l.ch)
 	case ',':
 		tok = NewToken(COMMA, l.ch)
-	case '+':
-		tok = NewToken(PLUS, l.ch)
 	case '{':
 		tok = NewToken(LBRACE, l.ch)
 	case '}':
@@ -57,6 +89,7 @@ func (l *Lexer) NextToken() Token {
 		// End of File
 		tok.Literal = ""
 		tok.Type = EOF
+
 	default:
 		// Check if character is a letter/digit
 		if isLetter(l.ch) {
