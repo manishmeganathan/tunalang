@@ -9,6 +9,16 @@ import (
 )
 
 const PROMPT = ">> "
+const TUNA = `
+oooooooooooooooooooooooooooooooooo
+  dP
+  88
+d8888P dP    dP 88d888b. .d8888b.
+  88   88    88 88'  '88 88'  '88
+  88   88.  .88 88    88 88.  .88
+  '88P '88888P' db    db '8888888.
+oooooooooooooooooooooooooooooooooo
+`
 
 // A function that starts the Tuna REPL
 func StartREPL(in io.Reader, out io.Writer) {
