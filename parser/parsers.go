@@ -1,8 +1,22 @@
 package parser
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/manishmeganathan/tuna/lexer"
 	"github.com/manishmeganathan/tuna/syntaxtree"
+)
+
+const (
+	_ int = iota
+	LOWEST
+	EQUALS      // ==
+	LESSGREATER // > or <
+	SUM         // +
+	PRODUCT     // *
+	PREFIX      // -X or !X
+	CALL        // myFunction(X)
 )
 
 // A method of Parser that parses the lexer input
@@ -47,9 +61,10 @@ func (p *Parser) parseStatement() syntaxtree.Statement {
 		// Parse the statement into a 'return' statement
 		return p.parseReturnStatement()
 
-	// Default Case (not a recognized statement)
+	// Expression Statement
 	default:
-		return nil
+		// Parse the statement into an 'expression' statement
+		return p.parseExpressionStatement()
 	}
 }
 
@@ -99,4 +114,68 @@ func (p *Parser) parseReturnStatement() *syntaxtree.ReturnStatement {
 
 	// Return the parsed return statement
 	return stmt
+}
+
+// A method of Parser that parses the token in the parse
+// cursor into an expression statement node for the syntax tree
+func (p *Parser) parseExpressionStatement() *syntaxtree.ExpressionStatement {
+	// Create an expression statement node with the token
+	stmt := &syntaxtree.ExpressionStatement{Token: p.cursorToken}
+	// Parse the full expression
+	stmt.Expression = p.parseExpression(LOWEST)
+
+	// Check if the next token is a semicolon
+	// (expressions do not have to end with a semicolon)
+	if p.isPeekToken(lexer.SEMICOLON) {
+		// Advance the parse cursor
+		p.NextToken()
+	}
+
+	// Returned the parsed expression statement
+	return stmt
+}
+
+// A method of Parser that parses a full expression given a precedence value
+func (p *Parser) parseExpression(precedence int) syntaxtree.Expression {
+	// Retrive the prefix parser function
+	prefix := p.prefixParseFns[p.cursorToken.Type]
+
+	// Check if the prefix parser is null
+	if prefix == nil {
+		// Return a nil
+		return nil
+	}
+
+	// Call the prefix parser
+	leftExp := prefix()
+	// Return the left over expression
+	return leftExp
+}
+
+// A method of Parser that parses an Identifier literal
+func (p *Parser) parseIdentifier() syntaxtree.Expression {
+	return &syntaxtree.Identifier{Token: p.cursorToken, Value: p.cursorToken.Literal}
+}
+
+// A method of Parser that parses an Integer literal
+func (p *Parser) parseIntegerLiteral() syntaxtree.Expression {
+	// Create an integer literal node with the token
+	lit := &syntaxtree.IntegerLiteral{Token: p.cursorToken}
+
+	// Parse the literal to int64
+	value, err := strconv.ParseInt(p.cursorToken.Literal, 0, 64)
+	// Check the error
+	if err != nil {
+		// Construct an error message
+		msg := fmt.Sprintf("could not parse %q as integer", p.cursorToken.Literal)
+		// Add the error to parser's errors
+		p.Errors = append(p.Errors, msg)
+		// Return a nil
+		return nil
+	}
+
+	// Assign the integer literal node's value
+	lit.Value = value
+	// Return the integer literal node
+	return lit
 }

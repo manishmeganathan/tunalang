@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/manishmeganathan/tuna/lexer"
+	"github.com/manishmeganathan/tuna/syntaxtree"
 )
 
 // A structure that represents a Parser
@@ -19,7 +20,19 @@ type Parser struct {
 
 	// Represents the next token on the parser queue
 	peekToken lexer.Token
+
+	// Represnts the mapping of token type to its prefix parser function
+	prefixParseFns map[lexer.TokenType]PrefixParseFn
+
+	// Represnts the mapping of token type to its infix parser function
+	infixParseFns map[lexer.TokenType]InfixParseFn
 }
+
+// Represents an alias for a prefix parser function
+type PrefixParseFn func() syntaxtree.Expression
+
+// Represents an alias for an infix parser function
+type InfixParseFn func(syntaxtree.Expression) syntaxtree.Expression
 
 // A constructor function that generates and returns a Parser after
 // initializing it with the given lexer and advancing parser queue
@@ -27,6 +40,12 @@ type Parser struct {
 func NewParser(l *lexer.Lexer) *Parser {
 	// Construct a parser with the lexer
 	p := &Parser{Lexer: l, Errors: make([]string, 0)}
+
+	// Initialize the prefix parser function map
+	p.prefixParseFns = make(map[lexer.TokenType]PrefixParseFn)
+	// Register the prefix parser functions
+	p.registerPrefix(lexer.IDENT, p.parseIdentifier)
+	p.registerPrefix(lexer.INT, p.parseIntegerLiteral)
 
 	// Advance two tokens such that cursorToken
 	// and peekToken are both set
@@ -74,7 +93,23 @@ func (p *Parser) expectPeek(t lexer.TokenType) bool {
 	}
 }
 
+// A method of Parser that adds a PeekError to the
+// list of parse errors given the token type
 func (p *Parser) peekError(t lexer.TokenType) {
+	// Construct the error message
 	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
+	// Add the error message to the parser's errors
 	p.Errors = append(p.Errors, msg)
+}
+
+// A method of Parser that registers a prefix parser
+// given the token type and a prefix parser function
+func (p *Parser) registerPrefix(tokenType lexer.TokenType, fn PrefixParseFn) {
+	p.prefixParseFns[tokenType] = fn
+}
+
+// A method of Parser that registers a infix parser
+// given the token type and a infix parser function
+func (p *Parser) registerInfix(tokenType lexer.TokenType, fn InfixParseFn) {
+	p.infixParseFns[tokenType] = fn
 }
