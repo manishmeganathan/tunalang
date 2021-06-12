@@ -16,3 +16,6 @@ func (i *Identifier) expressionNode() {}
 
 // A method of Identifier that returns its token literal value
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
+
+// A method of Identifier that returns its string representation
+func (i *Identifier) String() string { return i.Value }
