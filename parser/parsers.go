@@ -36,10 +36,16 @@ func (p *Parser) ParseProgram() *syntaxtree.Program {
 func (p *Parser) parseStatement() syntaxtree.Statement {
 	// Check the value of the token in the parse cursor
 	switch p.cursorToken.Type {
+
 	// Let Statement
 	case lexer.LET:
 		// Parse the statement into a 'let' statement
 		return p.parseLetStatement()
+
+	// Return Statement
+	case lexer.RETURN:
+		// Parse the statement into a 'return' statement
+		return p.parseReturnStatement()
 
 	// Default Case (not a recognized statement)
 	default:
@@ -75,5 +81,22 @@ func (p *Parser) parseLetStatement() *syntaxtree.LetStatement {
 	}
 
 	// Return the parsed let statement
+	return stmt
+}
+
+// A method of Parser that parses the token in the parse
+// cursor into a RETURN statement node for the syntax tree
+func (p *Parser) parseReturnStatement() *syntaxtree.ReturnStatement {
+	// Create a RETURN statement node with the token
+	stmt := &syntaxtree.ReturnStatement{Token: p.cursorToken}
+	// Advance the parse cursor
+	p.NextToken()
+
+	// Advance until semicolon in encountered (TODO: let statement value detection)
+	for !p.isCursorToken(lexer.SEMICOLON) {
+		p.NextToken()
+	}
+
+	// Return the parsed return statement
 	return stmt
 }
