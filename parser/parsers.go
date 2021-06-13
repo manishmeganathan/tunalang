@@ -19,6 +19,29 @@ const (
 	CALL        // myFunction(X)
 )
 
+var precedences = map[lexer.TokenType]int{
+	lexer.EQ:       EQUALS,
+	lexer.NOT_EQ:   EQUALS,
+	lexer.LT:       LESSGREATER,
+	lexer.GT:       LESSGREATER,
+	lexer.PLUS:     SUM,
+	lexer.MINUS:    SUM,
+	lexer.SLASH:    PRODUCT,
+	lexer.ASTERISK: PRODUCT,
+}
+
+// A function that returns the precedence value
+// for the given lexilogical token type
+func GetPrecedence(tokentype lexer.TokenType) int {
+	// Check the precedence table for the token type
+	if p, ok := precedences[tokentype]; ok {
+		// Return the precedence value
+		return p
+	}
+	// Return the lowest precedence if not found in the map
+	return LOWEST
+}
+
 // A method of Parser that parses the lexer input
 // into an abstract syntax tree Program
 func (p *Parser) ParseProgram() *syntaxtree.Program {
@@ -139,7 +162,6 @@ func (p *Parser) parseExpressionStatement() *syntaxtree.ExpressionStatement {
 func (p *Parser) parseExpression(precedence int) syntaxtree.Expression {
 	// Retrive the prefix parser function
 	prefix := p.prefixParseFns[p.cursorToken.Type]
-
 	// Check if the prefix parser is null
 	if prefix == nil {
 		p.noPrefixParseFnError(p.cursorToken.Type)
@@ -149,7 +171,25 @@ func (p *Parser) parseExpression(precedence int) syntaxtree.Expression {
 
 	// Call the prefix parser
 	leftExp := prefix()
-	// Return the left over expression
+
+	// Iterate on the token and check if the next token is neither a
+	// semicolon and hash a precedence below the the given precedence
+	for !p.isPeekToken(lexer.SEMICOLON) && precedence < GetPrecedence(p.peekToken.Type) {
+		// Retrive the infix parser function
+		infix := p.infixParseFns[p.peekToken.Type]
+		// Check if the infix parser is null
+		if infix == nil {
+			// Return the left expression as is
+			return leftExp
+		}
+
+		// Advance the parse cursor
+		p.NextToken()
+		// Call the infix parser on left expression and update it
+		leftExp = infix(leftExp)
+	}
+
+	// Return the left expression
 	return leftExp
 }
 
@@ -181,8 +221,9 @@ func (p *Parser) parseIntegerLiteral() syntaxtree.Expression {
 	return lit
 }
 
+// A method of Parser that parses a Prefix Expression
 func (p *Parser) parsePrefixExpression() syntaxtree.Expression {
-	// Create an prefix expression node with the token and operator literal
+	// Create a prefix expression node with the token and operator literal
 	expression := &syntaxtree.PrefixExpression{
 		Token:    p.cursorToken,
 		Operator: p.cursorToken.Literal,
@@ -193,5 +234,25 @@ func (p *Parser) parsePrefixExpression() syntaxtree.Expression {
 	// Assign the prefix expression node's expression value
 	expression.Right = p.parseExpression(PREFIX)
 	// Return the prefix expression node
+	return expression
+}
+
+// A method of Parser that parses an Infix Expression
+func (p *Parser) parseInfixExpression(left syntaxtree.Expression) syntaxtree.Expression {
+	// Create an infix expression node with the token, operator literal and left expression
+	expression := &syntaxtree.InfixExpression{
+		Token:    p.cursorToken,
+		Operator: p.cursorToken.Literal,
+		Left:     left,
+	}
+
+	// Determine the precedence of the cursor token
+	precedence := GetPrecedence(p.cursorToken.Type)
+	// Advance the parse cursor
+	p.NextToken()
+	// Assign the right expression to the parsed value of
+	// the right expression with the given precedence
+	expression.Right = p.parseExpression(precedence)
+	// Return the infix expression node
 	return expression
 }

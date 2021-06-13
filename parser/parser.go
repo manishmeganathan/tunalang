@@ -49,6 +49,18 @@ func NewParser(l *lexer.Lexer) *Parser {
 	p.registerPrefix(lexer.BANG, p.parsePrefixExpression)
 	p.registerPrefix(lexer.MINUS, p.parsePrefixExpression)
 
+	// Initialize the infix parser function map
+	p.infixParseFns = make(map[lexer.TokenType]InfixParseFn)
+	// Register the infix parser functions
+	p.registerInfix(lexer.PLUS, p.parseInfixExpression)
+	p.registerInfix(lexer.MINUS, p.parseInfixExpression)
+	p.registerInfix(lexer.SLASH, p.parseInfixExpression)
+	p.registerInfix(lexer.ASTERISK, p.parseInfixExpression)
+	p.registerInfix(lexer.EQ, p.parseInfixExpression)
+	p.registerInfix(lexer.NOT_EQ, p.parseInfixExpression)
+	p.registerInfix(lexer.LT, p.parseInfixExpression)
+	p.registerInfix(lexer.GT, p.parseInfixExpression)
+
 	// Advance two tokens such that cursorToken
 	// and peekToken are both set
 	p.NextToken()
