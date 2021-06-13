@@ -382,3 +382,66 @@ func (p *Parser) parseIfExpression() syntaxtree.Expression {
 	// Return the parsed if expression
 	return expression
 }
+
+// A method of Parser that parses Function parameters
+func (p *Parser) parseFunctionParameters() []*syntaxtree.Identifier {
+	// Initialize a slice of identifier nodes
+	identifiers := []*syntaxtree.Identifier{}
+
+	// Check if the next token is ) token
+	if p.isPeekToken(lexer.RPAREN) {
+		// Advance the parse cursor
+		p.NextToken()
+		// Return the empty list of identifiers
+		return identifiers
+	}
+
+	// Advance the parse cursor
+	p.NextToken()
+
+	// Create an identifer node for the syntax tree and add it to the list
+	ident := &syntaxtree.Identifier{Token: p.cursorToken, Value: p.cursorToken.Literal}
+	identifiers = append(identifiers, ident)
+
+	// Iterate as long as the next token is comma
+	for p.isPeekToken(lexer.COMMA) {
+		// Advance the parse cursor twice (skip the over the comma)
+		p.NextToken()
+		p.NextToken()
+
+		// Create an identifer node for the syntax tree and add it to the list
+		ident := &syntaxtree.Identifier{Token: p.cursorToken, Value: p.cursorToken.Literal}
+		identifiers = append(identifiers, ident)
+	}
+
+	// Check for the ) token
+	if !p.expectPeek(lexer.RPAREN) {
+		return nil
+	}
+
+	// Return the list of idenfier nodes for the function parameters
+	return identifiers
+}
+
+// A method of Parser that parses Function literals
+func (p *Parser) parseFunctionLiteral() syntaxtree.Expression {
+	// Create a function literal node
+	lit := &syntaxtree.FunctionLiteral{Token: p.cursorToken}
+
+	// Check for the function parameter begin ( token
+	if !p.expectPeek(lexer.LPAREN) {
+		return nil
+	}
+	// Assign the fn paramters after parsing them
+	lit.Parameters = p.parseFunctionParameters()
+
+	// Check for the function block begin { token
+	if !p.expectPeek(lexer.LBRACE) {
+		return nil
+	}
+	// Assign the fn body after parsing it
+	lit.Body = p.parseBlockStatement()
+
+	// Return the parsed function literal node
+	return lit
+}
