@@ -30,6 +30,8 @@ var precedences = map[lexer.TokenType]int{
 	lexer.ASTERISK: PRODUCT,
 }
 
+var traceON = false
+
 // A function that returns the precedence value
 // for the given lexilogical token type
 func GetPrecedence(tokentype lexer.TokenType) int {
@@ -142,6 +144,11 @@ func (p *Parser) parseReturnStatement() *syntaxtree.ReturnStatement {
 // A method of Parser that parses the token in the parse
 // cursor into an expression statement node for the syntax tree
 func (p *Parser) parseExpressionStatement() *syntaxtree.ExpressionStatement {
+	if traceON {
+		// Print parser trace
+		defer untrace(trace("parseExpressionStatement"))
+	}
+
 	// Create an expression statement node with the token
 	stmt := &syntaxtree.ExpressionStatement{Token: p.cursorToken}
 	// Parse the full expression
@@ -160,6 +167,11 @@ func (p *Parser) parseExpressionStatement() *syntaxtree.ExpressionStatement {
 
 // A method of Parser that parses a full expression given a precedence value
 func (p *Parser) parseExpression(precedence int) syntaxtree.Expression {
+	if traceON {
+		// Print parser trace
+		defer untrace(trace("parseExpression"))
+	}
+
 	// Retrive the prefix parser function
 	prefix := p.prefixParseFns[p.cursorToken.Type]
 	// Check if the prefix parser is null
@@ -200,6 +212,11 @@ func (p *Parser) parseIdentifier() syntaxtree.Expression {
 
 // A method of Parser that parses an Integer literal
 func (p *Parser) parseIntegerLiteral() syntaxtree.Expression {
+	if traceON {
+		// Print parser trace
+		defer untrace(trace("parseIntegerLiteral"))
+	}
+
 	// Create an integer literal node with the token
 	lit := &syntaxtree.IntegerLiteral{Token: p.cursorToken}
 
@@ -223,6 +240,11 @@ func (p *Parser) parseIntegerLiteral() syntaxtree.Expression {
 
 // A method of Parser that parses a Prefix Expression
 func (p *Parser) parsePrefixExpression() syntaxtree.Expression {
+	if traceON {
+		// Print parser trace
+		defer untrace(trace("parsePrefixExpression"))
+	}
+
 	// Create a prefix expression node with the token and operator literal
 	expression := &syntaxtree.PrefixExpression{
 		Token:    p.cursorToken,
@@ -239,6 +261,11 @@ func (p *Parser) parsePrefixExpression() syntaxtree.Expression {
 
 // A method of Parser that parses an Infix Expression
 func (p *Parser) parseInfixExpression(left syntaxtree.Expression) syntaxtree.Expression {
+	if traceON {
+		// Print parser trace
+		defer untrace(trace("parseInfixExpression"))
+	}
+
 	// Create an infix expression node with the token, operator literal and left expression
 	expression := &syntaxtree.InfixExpression{
 		Token:    p.cursorToken,
