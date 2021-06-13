@@ -46,6 +46,8 @@ func NewParser(l *lexer.Lexer) *Parser {
 	// Register the prefix parser functions
 	p.registerPrefix(lexer.IDENT, p.parseIdentifier)
 	p.registerPrefix(lexer.INT, p.parseIntegerLiteral)
+	p.registerPrefix(lexer.BANG, p.parsePrefixExpression)
+	p.registerPrefix(lexer.MINUS, p.parsePrefixExpression)
 
 	// Advance two tokens such that cursorToken
 	// and peekToken are both set
@@ -93,11 +95,20 @@ func (p *Parser) expectPeek(t lexer.TokenType) bool {
 	}
 }
 
-// A method of Parser that adds a PeekError to the
+// A method of Parser that adds a Peek Error to the
 // list of parse errors given the token type
 func (p *Parser) peekError(t lexer.TokenType) {
 	// Construct the error message
 	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
+	// Add the error message to the parser's errors
+	p.Errors = append(p.Errors, msg)
+}
+
+// A method of Parser that adds a NoPrefixParseFn Error to
+// the list of parse errors given the token type
+func (p *Parser) noPrefixParseFnError(t lexer.TokenType) {
+	// Construct the error message
+	msg := fmt.Sprintf("no prefix parse function for %s found", t)
 	// Add the error message to the parser's errors
 	p.Errors = append(p.Errors, msg)
 }

@@ -142,6 +142,7 @@ func (p *Parser) parseExpression(precedence int) syntaxtree.Expression {
 
 	// Check if the prefix parser is null
 	if prefix == nil {
+		p.noPrefixParseFnError(p.cursorToken.Type)
 		// Return a nil
 		return nil
 	}
@@ -178,4 +179,19 @@ func (p *Parser) parseIntegerLiteral() syntaxtree.Expression {
 	lit.Value = value
 	// Return the integer literal node
 	return lit
+}
+
+func (p *Parser) parsePrefixExpression() syntaxtree.Expression {
+	// Create an prefix expression node with the token and operator literal
+	expression := &syntaxtree.PrefixExpression{
+		Token:    p.cursorToken,
+		Operator: p.cursorToken.Literal,
+	}
+
+	// Advance the parse cursor
+	p.NextToken()
+	// Assign the prefix expression node's expression value
+	expression.Right = p.parseExpression(PREFIX)
+	// Return the prefix expression node
+	return expression
 }
