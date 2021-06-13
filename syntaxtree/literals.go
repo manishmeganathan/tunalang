@@ -1,6 +1,8 @@
 package syntaxtree
 
-import "github.com/manishmeganathan/tuna/lexer"
+import (
+	"github.com/manishmeganathan/tuna/lexer"
+)
 
 // A structure that represents an Identifier literal
 type Identifier struct {
@@ -37,3 +39,21 @@ func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 
 // A method of IntegerLiteral that returns its string representation
 func (il *IntegerLiteral) String() string { return il.Token.Literal }
+
+// A structure that represents a Boolean literal
+type BooleanLiteral struct {
+	// Represents the lexological token 'TRUE'/'FALSE'
+	Token lexer.Token
+
+	// Represents the boolean value
+	Value bool
+}
+
+// A method of BooleanLiteral to satisfy the Expression interface
+func (b *BooleanLiteral) expressionNode() {}
+
+// A method of BooleanLiteral that returns its token literal value
+func (b *BooleanLiteral) TokenLiteral() string { return b.Token.Literal }
+
+// A method of BooleanLiteral that returns its string representation
+func (b *BooleanLiteral) String() string { return b.Token.Literal }
