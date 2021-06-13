@@ -9,96 +9,70 @@ import (
 )
 
 func TestLetStatements(t *testing.T) {
-	input := `
-let x = 5;
-let y = 10;
-let foobar = 838383;
-`
-	l := lexer.NewLexer(input)
-	p := NewParser(l)
-
-	program := p.ParseProgram()
-	checkParserErrors(t, p)
-
-	if program == nil {
-		t.Fatalf("ParseProgram() returned nil")
-	}
-
-	if len(program.Statements) != 3 {
-		t.Fatalf("program.Statements does not contain 3 statements. got=%d", len(program.Statements))
-	}
-
 	tests := []struct {
+		input              string
 		expectedIdentifier string
 	}{
-		{"x"},
-		{"y"},
-		{"foobar"},
+		{"let x = 5;", "x"},
+		{"let y = 10;", "y"},
+		{"let foobar = 838383;", "foobar"},
 	}
 
-	for i, tt := range tests {
-		statement := program.Statements[i]
-		if !testLetStatement(t, statement, tt.expectedIdentifier) {
+	for _, tt := range tests {
+
+		l := lexer.NewLexer(tt.input)
+		p := NewParser(l)
+
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf("program.Statements does not contain a statement. got=%d", len(program.Statements))
+		}
+
+		stmt := program.Statements[0]
+		if !testLetStatement(t, stmt, tt.expectedIdentifier) {
 			return
 		}
 	}
 }
 
 func TestReturnStatements(t *testing.T) {
-	input := `
-return 5;
-return 10;
-return 993322;
-	`
-
-	l := lexer.NewLexer(input)
-	p := NewParser(l)
-
-	program := p.ParseProgram()
-	checkParserErrors(t, p)
-
-	if len(program.Statements) != 3 {
-		t.Fatalf("program.Statements does not contain 3 statements. got=%d",
-			len(program.Statements))
+	tests := []struct {
+		input         string
+		expectedValue interface{}
+	}{
+		{"return 5;", 5},
+		{"return 10;", 10},
+		{"return 999332;", 999332},
 	}
 
-	for _, stmt := range program.Statements {
-		returnStmt, ok := stmt.(*syntaxtree.ReturnStatement)
+	for _, tt := range tests {
+
+		l := lexer.NewLexer(tt.input)
+		p := NewParser(l)
+
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf("program.Statements does not contain a statement. got=%d", len(program.Statements))
+		}
+
+		stmt := program.Statements[0]
+		returnstmt, ok := stmt.(*syntaxtree.ReturnStatement)
 		if !ok {
-			t.Errorf("stmt not *ast.ReturnStatement. got=%T", stmt)
-			continue
+			t.Fatalf("stmt not *syntaxtree.ReturnStatement. got=%T", stmt)
 		}
-		if returnStmt.TokenLiteral() != "return" {
-			t.Errorf("returnStmt.TokenLiteral not 'return', got %q",
-				returnStmt.TokenLiteral())
+
+		if returnstmt.TokenLiteral() != "return" {
+			t.Fatalf("returnStmt.TokenLiteral not 'return', got %q", returnstmt.TokenLiteral())
+		}
+
+		if testLiteralExpression(t, returnstmt.ReturnValue, tt.expectedValue) {
+			return
 		}
 	}
-}
-
-func testLetStatement(t *testing.T, s syntaxtree.Statement, name string) bool {
-
-	if s.TokenLiteral() != "let" {
-		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
-		return false
-	}
-
-	letStatement, ok := s.(*syntaxtree.LetStatement)
-	if !ok {
-		t.Errorf("s not *syntaxtree.LetStatement. got=%T", s)
-		return false
-	}
-
-	if letStatement.Name.Value != name {
-		t.Errorf("letStatement.Name.Value not '%s'. got=%s", name, letStatement.Name.Value)
-		return false
-	}
-
-	if letStatement.Name.TokenLiteral() != name {
-		t.Errorf("letStatement.Name.TokenLiteral() not '%s'. got=%s", name, letStatement.Name.TokenLiteral())
-		return false
-	}
-
-	return true
 }
 
 func TestIdentifierExpression(t *testing.T) {
@@ -131,8 +105,7 @@ func TestIdentifierExpression(t *testing.T) {
 	}
 
 	if ident.TokenLiteral() != "foobar" {
-		t.Errorf("ident.TokenLiteral not %s. got=%s", "foobar",
-			ident.TokenLiteral())
+		t.Errorf("ident.TokenLiteral not %s. got=%s", "foobar", ident.TokenLiteral())
 	}
 }
 
@@ -152,13 +125,13 @@ func TestIntegerLiteralExpression(t *testing.T) {
 
 	stmt, ok := program.Statements[0].(*syntaxtree.ExpressionStatement)
 	if !ok {
-		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+		t.Fatalf("program.Statements[0] is not syntaxtree.ExpressionStatement. got=%T",
 			program.Statements[0])
 	}
 
 	literal, ok := stmt.Expression.(*syntaxtree.IntegerLiteral)
 	if !ok {
-		t.Fatalf("exp not *ast.IntegerLiteral. got=%T", stmt.Expression)
+		t.Fatalf("exp not *syntaxtree.IntegerLiteral. got=%T", stmt.Expression)
 	}
 
 	if literal.Value != 5 {
@@ -166,8 +139,7 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	}
 
 	if literal.TokenLiteral() != "5" {
-		t.Errorf("literal.TokenLiteral not %s. got=%s", "5",
-			literal.TokenLiteral())
+		t.Errorf("literal.TokenLiteral not %s. got=%s", "5", literal.TokenLiteral())
 	}
 }
 
@@ -197,13 +169,13 @@ func TestParsingPrefixExpressions(t *testing.T) {
 
 		stmt, ok := program.Statements[0].(*syntaxtree.ExpressionStatement)
 		if !ok {
-			t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+			t.Fatalf("program.Statements[0] is not syntaxtree.ExpressionStatement. got=%T",
 				program.Statements[0])
 		}
 
 		exp, ok := stmt.Expression.(*syntaxtree.PrefixExpression)
 		if !ok {
-			t.Fatalf("stmt is not ast.PrefixExpression. got=%T", stmt.Expression)
+			t.Fatalf("stmt is not syntaxtree.PrefixExpression. got=%T", stmt.Expression)
 		}
 
 		if exp.Operator != tt.operator {
@@ -211,7 +183,7 @@ func TestParsingPrefixExpressions(t *testing.T) {
 				tt.operator, exp.Operator)
 		}
 
-		if !testIntegerLiteral(t, exp.Right, tt.integerValue) {
+		if !testLiteralExpression(t, exp.Right, tt.integerValue) {
 			return
 		}
 	}
@@ -250,25 +222,11 @@ func TestParsingInfixExpressions(t *testing.T) {
 
 		stmt, ok := program.Statements[0].(*syntaxtree.ExpressionStatement)
 		if !ok {
-			t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+			t.Fatalf("program.Statements[0] is not syntaxtree.ExpressionStatement. got=%T",
 				program.Statements[0])
 		}
 
-		exp, ok := stmt.Expression.(*syntaxtree.InfixExpression)
-		if !ok {
-			t.Fatalf("exp is not ast.InfixExpression. got=%T", stmt.Expression)
-		}
-
-		if !testIntegerLiteral(t, exp.Left, tt.leftValue) {
-			return
-		}
-
-		if exp.Operator != tt.operator {
-			t.Fatalf("exp.Operator is not '%s'. got=%s",
-				tt.operator, exp.Operator)
-		}
-
-		if !testIntegerLiteral(t, exp.Right, tt.rightValue) {
+		if !testInfixExpression(t, stmt.Expression, tt.leftValue, tt.operator, tt.rightValue) {
 			return
 		}
 	}
@@ -308,10 +266,56 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 	}
 }
 
+func testLetStatement(t *testing.T, s syntaxtree.Statement, name string) bool {
+
+	if s.TokenLiteral() != "let" {
+		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
+		return false
+	}
+
+	letStatement, ok := s.(*syntaxtree.LetStatement)
+	if !ok {
+		t.Errorf("s not *syntaxtree.LetStatement. got=%T", s)
+		return false
+	}
+
+	if letStatement.Name.Value != name {
+		t.Errorf("letStatement.Name.Value not '%s'. got=%s", name, letStatement.Name.Value)
+		return false
+	}
+
+	if letStatement.Name.TokenLiteral() != name {
+		t.Errorf("letStatement.Name.TokenLiteral() not '%s'. got=%s", name, letStatement.Name.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+
+func testIdentifier(t *testing.T, exp syntaxtree.Expression, value string) bool {
+	ident, ok := exp.(*syntaxtree.Identifier)
+	if !ok {
+		t.Errorf("exp not *syntaxtree.Identifier. got=%T", exp)
+		return false
+	}
+
+	if ident.Value != value {
+		t.Errorf("ident.Value not %s. got=%s", value, ident.Value)
+		return false
+	}
+
+	if ident.TokenLiteral() != value {
+		t.Errorf("ident.TokenLiteral not %s. got=%s", value, ident.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+
 func testIntegerLiteral(t *testing.T, il syntaxtree.Expression, value int64) bool {
 	integ, ok := il.(*syntaxtree.IntegerLiteral)
 	if !ok {
-		t.Errorf("il not *ast.IntegerLiteral. got=%T", il)
+		t.Errorf("il not *syntaxtree.IntegerLiteral. got=%T", il)
 		return false
 	}
 
@@ -321,8 +325,49 @@ func testIntegerLiteral(t *testing.T, il syntaxtree.Expression, value int64) boo
 	}
 
 	if integ.TokenLiteral() != fmt.Sprintf("%d", value) {
-		t.Errorf("integ.TokenLiteral not %d. got=%s", value,
-			integ.TokenLiteral())
+		t.Errorf("integ.TokenLiteral not %d. got=%s", value, integ.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+
+func testLiteralExpression(t *testing.T, exp syntaxtree.Expression, expected interface{}) bool {
+
+	switch v := expected.(type) {
+
+	case int:
+		return testIntegerLiteral(t, exp, int64(v))
+
+	case int64:
+		return testIntegerLiteral(t, exp, v)
+
+	case string:
+		return testIdentifier(t, exp, v)
+	}
+
+	t.Errorf("type of exp not handled. got=%T", exp)
+	return false
+}
+
+func testInfixExpression(t *testing.T, exp syntaxtree.Expression, left interface{}, operator string, right interface{}) bool {
+	opExp, ok := exp.(*syntaxtree.InfixExpression)
+
+	if !ok {
+		t.Errorf("exp is not syntaxtree.InfixExpression. got=%T(%s)", exp, exp)
+		return false
+	}
+
+	if !testLiteralExpression(t, opExp.Left, left) {
+		return false
+	}
+
+	if opExp.Operator != operator {
+		t.Errorf("exp.Operator is not '%s'. got=%q", operator, opExp.Operator)
+		return false
+	}
+
+	if !testLiteralExpression(t, opExp.Right, right) {
 		return false
 	}
 

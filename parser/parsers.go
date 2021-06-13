@@ -132,8 +132,11 @@ func (p *Parser) parseReturnStatement() *syntaxtree.ReturnStatement {
 	// Advance the parse cursor
 	p.NextToken()
 
-	// Advance until semicolon in encountered (TODO: let statement value detection)
-	for !p.isCursorToken(lexer.SEMICOLON) {
+	// Assign the parsed return value
+	stmt.ReturnValue = p.parseExpression(LOWEST)
+
+	// Advance until semicolon in encountered
+	if p.isPeekToken(lexer.SEMICOLON) {
 		p.NextToken()
 	}
 
