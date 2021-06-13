@@ -28,6 +28,7 @@ var precedences = map[lexer.TokenType]int{
 	lexer.MINUS:    SUM,
 	lexer.SLASH:    PRODUCT,
 	lexer.ASTERISK: PRODUCT,
+	lexer.LPAREN:   CALL,
 }
 
 var traceON = false
@@ -444,4 +445,52 @@ func (p *Parser) parseFunctionLiteral() syntaxtree.Expression {
 
 	// Return the parsed function literal node
 	return lit
+}
+
+// A method of Parser that parses Call expression arguments
+func (p *Parser) parseCallArguments() []syntaxtree.Expression {
+	// Initialize a slice of expression nodes
+	args := []syntaxtree.Expression{}
+
+	// Check if the next token is a ) token
+	if p.isPeekToken(lexer.RPAREN) {
+		// Advance the parse cursor
+		p.NextToken()
+		// Return the empty list of arguments
+		return args
+	}
+
+	// Advance the parse cursor
+	p.NextToken()
+	// Append the parsed arg to the arg list
+	args = append(args, p.parseExpression(LOWEST))
+
+	// Iterate until the next token is a comma
+	for p.isPeekToken(lexer.COMMA) {
+		// Advance the parse cursor twice (skip over the comma)
+		p.NextToken()
+		p.NextToken()
+
+		// Append the parsed args into the arg list
+		args = append(args, p.parseExpression(LOWEST))
+	}
+
+	// Check if the next token is )
+	if !p.expectPeek(lexer.RPAREN) {
+		return nil
+	}
+
+	// Return the parsed call arguments
+	return args
+}
+
+// A method of Parser that parses Call expression
+func (p *Parser) parseCallExpression(function syntaxtree.Expression) syntaxtree.Expression {
+	// Create a call expression node for the syntax tree
+	exp := &syntaxtree.CallExpression{Token: p.cursorToken, Function: function}
+	// Parse the call arguments
+	exp.Arguments = p.parseCallArguments()
+
+	// Return the parsed call expression
+	return exp
 }
