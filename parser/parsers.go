@@ -312,3 +312,73 @@ func (p *Parser) parseGroupedExpression() syntaxtree.Expression {
 	// Return the parsed parentheses
 	return exp
 }
+
+// A method of Parser that parses Block Statements
+func (p *Parser) parseBlockStatement() *syntaxtree.BlockStatement {
+	// Create a block statement node for the syntax tree
+	block := &syntaxtree.BlockStatement{Token: p.cursorToken}
+	// Initialze the block statements slice
+	block.Statements = []syntaxtree.Statement{}
+	// Advance the parse cursor
+	p.NextToken()
+
+	// Iterate until an } or EOF token is encountered
+	for !p.isCursorToken(lexer.RBRACE) && !p.isCursorToken(lexer.EOF) {
+		// Parse the statement
+		stmt := p.parseStatement()
+		// Check the parsed statement
+		if stmt != nil {
+			// Add it the to block statements
+			block.Statements = append(block.Statements, stmt)
+		}
+
+		// Advance the parse cursor
+		p.NextToken()
+	}
+
+	// Return the parsed block statement
+	return block
+}
+
+// A method of Parser that parses If Expressions
+func (p *Parser) parseIfExpression() syntaxtree.Expression {
+	// Create an if expression node for the syntax tree
+	expression := &syntaxtree.IfExpression{Token: p.cursorToken}
+	// Check for the conditional opening ( token
+	if !p.expectPeek(lexer.LPAREN) {
+		return nil
+	}
+
+	// Advance the parse cursor
+	p.NextToken()
+	// Parse the condition expression
+	expression.Condition = p.parseExpression(LOWEST)
+
+	// Check for the conditional ending ) token
+	if !p.expectPeek(lexer.RPAREN) {
+		return nil
+	}
+
+	// Check for the block opening { token
+	if !p.expectPeek(lexer.LBRACE) {
+		return nil
+	}
+	// Parse the consequence block statement
+	expression.Consequence = p.parseBlockStatement()
+
+	// Check the ELSE token
+	if p.isPeekToken(lexer.ELSE) {
+		// Advance the parse cursor
+		p.NextToken()
+
+		// Check for the block opening { token
+		if !p.expectPeek(lexer.LBRACE) {
+			return nil
+		}
+		// Parse the alternate consequence block statement
+		expression.Alternative = p.parseBlockStatement()
+	}
+
+	// Return the parsed if expression
+	return expression
+}
