@@ -105,3 +105,33 @@ func (es *ExpressionStatement) String() string {
 	// Return an empty string
 	return ""
 }
+
+// A structure that represents a block of code statements
+type BlockStatement struct {
+	// Represents the '{' token
+	Token lexer.Token
+
+	// Represents the statements in the code block
+	Statements []Statement
+}
+
+// A method of BlockStatement to satisfy the Statement interface
+func (bs *BlockStatement) statementNode() {}
+
+// A method of BlockStatement that returns its token literal value
+func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
+
+// A method of BlockStatement that returns its string representation
+func (bs *BlockStatement) String() string {
+	// Declare the bytes buffer
+	var out bytes.Buffer
+
+	// Iterate over the block statements
+	for _, s := range bs.Statements {
+		// Add its string representation to the buffer
+		out.WriteString(s.String())
+	}
+
+	// Return the string from the buffer
+	return out.String()
+}
