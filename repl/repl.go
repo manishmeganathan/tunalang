@@ -6,6 +6,7 @@ import (
 	"io"
 
 	"github.com/manishmeganathan/tuna/lexer"
+	"github.com/manishmeganathan/tuna/parser"
 )
 
 const PROMPT = ">> "
@@ -18,6 +19,17 @@ d8888P dP    dP 88d888b. .d8888b.
   88   88.  .88 88    88 88.  .88
   '88P '88888P' db    db '8888888.
 oooooooooooooooooooooooooooooooooo
+`
+
+const TUNA2 = `
+  dP                              dP                            
+  88                              88                            
+d8888P dP    dP 88d888b. .d8888b. 88 .d8888b. 88d888b. .d8888b. 
+  88   88    88 88'  '88 88'  '88 88 88'  '88 88'  '88 88'  '88 
+  88   88.  .88 88    88 88.  .88 88 88.  .88 88    88 88.  .88 
+  '88P '88888P' db    db '88888P8 db '88888P8 db    db '8888P88 
+oooooooooooooooooooooooooooooooooooooooooooooooooooooooo~~~~.88
+							d8888P 
 `
 
 // A function that starts the Tuna REPL
@@ -38,11 +50,23 @@ func StartREPL(in io.Reader, out io.Writer) {
 		line := scanner.Text()
 		// Create a Lexer instance
 		lex := lexer.NewLexer(line)
+		par := parser.NewParser(lex)
 
-		// Iterate over the input characters and lex them into their tokens
-		for tok := lex.NextToken(); tok.Type != lexer.EOF; tok = lex.NextToken() {
-			// Print the tokens as they are lexed
-			fmt.Fprintf(out, "%+v\n", tok)
+		program := par.ParseProgram()
+		if len(par.Errors) != 0 {
+			printParserErrors(out, par.Errors)
+			continue
 		}
+
+		io.WriteString(out, program.String())
+		io.WriteString(out, "\n")
+	}
+}
+
+func printParserErrors(out io.Writer, errors []string) {
+	io.WriteString(out, "Woops! We has some trouble parsing!\n")
+	io.WriteString(out, "parser errors:\n")
+	for _, msg := range errors {
+		io.WriteString(out, "\t"+msg+"\n")
 	}
 }
