@@ -114,8 +114,13 @@ func (p *Parser) parseLetStatement() *syntaxtree.LetStatement {
 		return nil
 	}
 
-	// Advance until semicolon in encountered (TODO: let statement value detection)
-	for !p.isCursorToken(lexer.SEMICOLON) {
+	// Advance the parse cursor
+	p.NextToken()
+	// Assign the parsed let value expression
+	stmt.Value = p.parseExpression(LOWEST)
+
+	// Advance until semicolon in encountered
+	if p.isPeekToken(lexer.SEMICOLON) {
 		// Advance the parse cursor
 		p.NextToken()
 	}
@@ -285,4 +290,9 @@ func (p *Parser) parseInfixExpression(left syntaxtree.Expression) syntaxtree.Exp
 	expression.Right = p.parseExpression(precedence)
 	// Return the infix expression node
 	return expression
+}
+
+// A method of Parser that parses a Boolean Literal
+func (p *Parser) parseBooleanLiteral() syntaxtree.Expression {
+	return &syntaxtree.BooleanLiteral{Token: p.cursorToken, Value: p.isCursorToken(lexer.TRUE)}
 }
