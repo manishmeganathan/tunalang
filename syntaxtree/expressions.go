@@ -2,6 +2,7 @@ package syntaxtree
 
 import (
 	"bytes"
+	"strings"
 
 	"github.com/manishmeganathan/tuna/lexer"
 )
@@ -117,6 +118,47 @@ func (ie *IfExpression) String() string {
 		out.WriteString("else ")
 		out.WriteString(ie.Alternative.String())
 	}
+
+	// Return the string of the buffer
+	return out.String()
+}
+
+// A structure that represents an call expression node on the syntax tree
+type CallExpression struct {
+	// Represents the ( token
+	Token lexer.Token
+
+	// Represents the function identifier
+	Function Expression
+
+	// Represents the function arguments
+	Arguments []Expression
+}
+
+// A method of CallExpression to satisfy the Expression interface
+func (ce *CallExpression) expressionNode() {}
+
+// A method of CallExpression that returns its token literal value
+func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
+
+// A method of CallExpression that returns its string representation
+func (ce *CallExpression) String() string {
+	// Declare a bytes buffer
+	var out bytes.Buffer
+	// Initialize the args slice
+	args := []string{}
+
+	// Iterate over the expression arguments
+	for _, a := range ce.Arguments {
+		// Add them to the arg slice
+		args = append(args, a.String())
+	}
+	// Add the function to the buffer
+	out.WriteString(ce.Function.String())
+	// Add the function arguments
+	out.WriteString("(")
+	out.WriteString(strings.Join(args, ", "))
+	out.WriteString(")")
 
 	// Return the string of the buffer
 	return out.String()
