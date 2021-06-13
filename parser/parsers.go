@@ -296,3 +296,19 @@ func (p *Parser) parseInfixExpression(left syntaxtree.Expression) syntaxtree.Exp
 func (p *Parser) parseBooleanLiteral() syntaxtree.Expression {
 	return &syntaxtree.BooleanLiteral{Token: p.cursorToken, Value: p.isCursorToken(lexer.TRUE)}
 }
+
+// A method of Parser that parses Grouped Expressions
+func (p *Parser) parseGroupedExpression() syntaxtree.Expression {
+	// Advance the parse cursor
+	p.NextToken()
+	// Parse the expression in the parentheses
+	exp := p.parseExpression(LOWEST)
+
+	// Check for closing parentheses
+	if !p.expectPeek(lexer.RPAREN) {
+		return nil
+	}
+
+	// Return the parsed parentheses
+	return exp
+}
