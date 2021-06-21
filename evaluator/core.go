@@ -26,6 +26,13 @@ func Evaluate(node syntaxtree.Node) object.Object {
 		// Recursive evaluation
 		return Evaluate(node.Expression)
 
+	// Prefix Expression Node
+	case *syntaxtree.PrefixExpression:
+		// Evaluate the expression into an object
+		right := Evaluate(node.Right)
+		// Evaluate the object for the operator
+		return evalPrefixExpression(node.Operator, right)
+
 	// IntegerLiteral Node
 	case *syntaxtree.IntegerLiteral:
 		// Return the Integer Object
