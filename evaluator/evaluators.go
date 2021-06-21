@@ -44,6 +44,45 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	}
 }
 
+// A function that returns the result object for a
+// given object with the prefix bang operator applied
+func evalBangOperatorExpression(right object.Object) object.Object {
+	// Check value of object
+	switch right {
+
+	// Flip true to false
+	case TRUE:
+		return FALSE
+
+	// Flip false to true
+	case FALSE:
+		return TRUE
+
+	// Flip null to true
+	case NULL:
+		return TRUE
+
+	// Default to false
+	default:
+		return FALSE
+	}
+}
+
+// A function that returns the result object for a
+// given object with the prefix minus operator applied
+func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
+	// Check that object is an Integer
+	if right.Type() != object.INTEGER_OBJ {
+		// Return null for non integer objects
+		return NULL
+	}
+
+	// Retrieve the value of the Integer object
+	value := right.(*object.Integer).Value
+	// Return the modified Integer with the negative of the value
+	return &object.Integer{Value: -value}
+}
+
 // A function that evaluates an infix expression given
 // a infix operator and the left and right objects
 func evalInfixExpression(operator string, left, right object.Object) object.Object {
@@ -74,23 +113,43 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 
 	// Plus operator (Add)
 	case "+":
-		// Evaluate the object for addition
+		// Evaluate the objects for addition
 		return &object.Integer{Value: leftVal + rightVal}
 
 	// Minus Operator (Subtract)
 	case "-":
-		// Evaluate the object for subtraction
+		// Evaluate the objects for subtraction
 		return &object.Integer{Value: leftVal - rightVal}
 
 	// Asterisk Operator (Multiply)
 	case "*":
-		// Evaluate the object for multiplication
+		// Evaluate the objects for multiplication
 		return &object.Integer{Value: leftVal * rightVal}
 
 	// Slash Operator (Divide)
 	case "/":
-		// Evaluate the object for division
+		// Evaluate the objects for division
 		return &object.Integer{Value: leftVal / rightVal}
+
+	// Less Than Operator
+	case "<":
+		// Evaluate the object for '<'
+		return getNativeBoolean(leftVal < rightVal)
+
+	// Greater Than Operator
+	case ">":
+		// Evaluate the object for '>'
+		return getNativeBoolean(leftVal > rightVal)
+
+	// Equal To Operator
+	case "==":
+		// Evaluate the object for '=='
+		return getNativeBoolean(leftVal == rightVal)
+
+	// Not Equal To Operator
+	case "!=":
+		// Evaluate the object for '!='
+		return getNativeBoolean(leftVal != rightVal)
 
 	// Unsupported Operator
 	default:
