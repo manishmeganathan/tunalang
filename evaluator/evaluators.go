@@ -166,3 +166,24 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 		return NULL
 	}
 }
+
+// A function that evaluates an if expression given an IfExpression syntax tree node
+func evalIfExpression(ie *syntaxtree.IfExpression) object.Object {
+	// Evaluate the conditional statement
+	condition := Evaluate(ie.Condition)
+
+	// Check if the condition is truthy
+	if isTruthy(condition) {
+		// Evaluate the consequence block
+		return Evaluate(ie.Consequence)
+
+		// Check if alternate exists
+	} else if ie.Alternative != nil {
+		// Evaluate the alternate consequence block
+		return Evaluate(ie.Alternative)
+
+	} else {
+		// Return null
+		return NULL
+	}
+}

@@ -42,6 +42,16 @@ func Evaluate(node syntaxtree.Node) object.Object {
 		// Evaluate the expression with the objects and the operator
 		return evalInfixExpression(node.Operator, left, right)
 
+	// Block Statement Node
+	case *syntaxtree.BlockStatement:
+		// Evaluate the statements in the block
+		return evalStatements(node.Statements)
+
+	// If Expression Node
+	case *syntaxtree.IfExpression:
+		// Evaluate the if expression
+		return evalIfExpression(node)
+
 	// Integer Literal Node
 	case *syntaxtree.IntegerLiteral:
 		// Return the Integer Object
@@ -68,4 +78,28 @@ func getNativeBoolean(input bool) *object.Boolean {
 
 	// Return the FALSE boolean native
 	return FALSE
+}
+
+// A function that returns whether an Object is 'truthy'.
+// An object is 'truthy' if it is not false and not null.
+func isTruthy(obj object.Object) bool {
+	// Check object value
+	switch obj {
+
+	// Null values are not truthy
+	case NULL:
+		return false
+
+	// True values are truthy
+	case TRUE:
+		return true
+
+	// False values are not truthy
+	case FALSE:
+		return false
+
+	// All other types are truthy
+	default:
+		return true
+	}
 }
