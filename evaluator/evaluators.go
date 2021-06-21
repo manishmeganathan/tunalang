@@ -86,13 +86,22 @@ func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 // A function that evaluates an infix expression given
 // a infix operator and the left and right objects
 func evalInfixExpression(operator string, left, right object.Object) object.Object {
-	// Check the object type combinations
+	// Check Parameters
 	switch {
 
-	// Both are Integers
+	// If both are objects are Integers
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		// Evaluate expression for integer objects
 		return evalIntegerInfixExpression(operator, left, right)
+
+	// If both objects are not Integers but the operator is '=='
+	case operator == "==":
+		// Evaluate the objects for '=='
+		return getNativeBoolean(left == right)
+
+	case operator == "!=":
+		// Evaluate the objects for '!='
+		return getNativeBoolean(left != right)
 
 	// Unsupported combination
 	default:
@@ -133,22 +142,22 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 
 	// Less Than Operator
 	case "<":
-		// Evaluate the object for '<'
+		// Evaluate the objects for '<'
 		return getNativeBoolean(leftVal < rightVal)
 
 	// Greater Than Operator
 	case ">":
-		// Evaluate the object for '>'
+		// Evaluate the objects for '>'
 		return getNativeBoolean(leftVal > rightVal)
 
 	// Equal To Operator
 	case "==":
-		// Evaluate the object for '=='
+		// Evaluate the objects for '=='
 		return getNativeBoolean(leftVal == rightVal)
 
 	// Not Equal To Operator
 	case "!=":
-		// Evaluate the object for '!='
+		// Evaluate the objects for '!='
 		return getNativeBoolean(leftVal != rightVal)
 
 	// Unsupported Operator
