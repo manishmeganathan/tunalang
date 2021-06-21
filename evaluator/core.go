@@ -33,12 +33,21 @@ func Evaluate(node syntaxtree.Node) object.Object {
 		// Evaluate the object for the operator
 		return evalPrefixExpression(node.Operator, right)
 
-	// IntegerLiteral Node
+	// Infix Expression Node
+	case *syntaxtree.InfixExpression:
+		// Evaluate the left node
+		left := Evaluate(node.Left)
+		// Evaluate the right node
+		right := Evaluate(node.Right)
+		// Evaluate the expression with the objects and the operator
+		return evalInfixExpression(node.Operator, left, right)
+
+	// Integer Literal Node
 	case *syntaxtree.IntegerLiteral:
 		// Return the Integer Object
 		return &object.Integer{Value: node.Value}
 
-	// BooleanLiteral Node
+	// Boolean Literal Node
 	case *syntaxtree.BooleanLiteral:
 		// Return the native Boolean Object for the value
 		return getNativeBoolean(node.Value)
