@@ -1,12 +1,19 @@
 package object
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+	"strings"
+
+	"github.com/manishmeganathan/tuna/syntaxtree"
+)
 
 const (
 	NULL_OBJ = "NULL"
 
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
 	ERROR_OBJ        = "ERROR"
+	FUNCTION_OBJ     = "FUNCTION"
 
 	INTEGER_OBJ = "INTEGER"
 	BOOLEAN_OBJ = "BOOLEAN"
@@ -49,4 +56,41 @@ func (e *Error) Inspect() string { return "ERROR: " + e.Message }
 // for a given message and some variadic interface
 func NewError(format string, a ...interface{}) *Error {
 	return &Error{Message: fmt.Sprintf(format, a...)}
+}
+
+// A structure that represents a Function object
+type Function struct {
+	// Represents the function parameters
+	Parameters []*syntaxtree.Identifier
+	// Represents the function body
+	Body *syntaxtree.BlockStatement
+	// Represents the function execution environment (scope)
+	Env *Environment
+}
+
+// A method of Function that returns the Function value type
+func (f *Function) Type() ObjectType { return FUNCTION_OBJ }
+
+// A method of Function that returns the string value of the Function object
+func (f *Function) Inspect() string {
+	// Declare a bytes buffer
+	var out bytes.Buffer
+	// Initialize an empty slice of strings
+	params := []string{}
+	// Add the function parameters to the slice
+	for _, p := range f.Parameters {
+		params = append(params, p.String())
+	}
+
+	// Add the fn keyword and parameters
+	out.WriteString("fn")
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") {\n")
+	// Add the fn body
+	out.WriteString(f.Body.String())
+	out.WriteString("\n}")
+
+	// Return string buffer
+	return out.String()
 }
