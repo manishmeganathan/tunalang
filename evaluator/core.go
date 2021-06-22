@@ -23,9 +23,8 @@ func Evaluate(node syntaxtree.Node, env *object.Environment) object.Object {
 
 	// Return Statement Node
 	case *syntaxtree.ReturnStatement:
-		// Evaluate the Expression in the return value
+		// Evaluate the Expression in the return statement
 		val := Evaluate(node.ReturnValue, env)
-
 		// Check if evaluated value is an error
 		if isError(val) {
 			// Return the error
@@ -84,6 +83,23 @@ func Evaluate(node syntaxtree.Node, env *object.Environment) object.Object {
 		// Evaluate the if expression
 		return evalIfExpression(node, env)
 
+	// Let Statement Node
+	case *syntaxtree.LetStatement:
+		// Evaluate the Expression in the let statement
+		val := Evaluate(node.Value, env)
+		// Check if evaluated value is an error
+		if isError(val) {
+			// Return the error
+			return val
+		}
+
+		// Set the evaluated object and the literal
+		// name to the environment store
+		env.Set(node.Name.Value, val)
+
+	case *syntaxtree.Identifier:
+		return evalIdentifier(node, env)
+
 	// Integer Literal Node
 	case *syntaxtree.IntegerLiteral:
 		// Return the Integer Object
@@ -96,7 +112,7 @@ func Evaluate(node syntaxtree.Node, env *object.Environment) object.Object {
 	}
 
 	// Return nil if not evaluated
-	return NULL
+	return nil
 }
 
 // A function that returns the native Boolean

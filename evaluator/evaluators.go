@@ -239,3 +239,17 @@ func evalIfExpression(ie *syntaxtree.IfExpression, env *object.Environment) obje
 		return NULL
 	}
 }
+
+// A function that evaluates an identifier literal given an Identifier syntax tree node
+func evalIdentifier(node *syntaxtree.Identifier, env *object.Environment) object.Object {
+	// Retrieve the identifier value from the environment
+	val, ok := env.Get(node.Value)
+	// Check the ok flag
+	if !ok {
+		// Return error when the identifier does not exist in the environment
+		return object.NewError("identifier not found: " + node.Value)
+	}
+
+	// Return the value
+	return val
+}
