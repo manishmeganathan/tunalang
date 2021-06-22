@@ -5,8 +5,7 @@ import (
 	"github.com/manishmeganathan/tuna/syntaxtree"
 )
 
-// A function that evaluates a set of Syntax tree
-// statements into an evaluated object
+// A function that evaluates a Syntax tree program into an evaluated object
 func evalProgram(program *syntaxtree.Program) object.Object {
 	// Declare an object
 	var result object.Object
@@ -16,10 +15,18 @@ func evalProgram(program *syntaxtree.Program) object.Object {
 		// Update the result object
 		result = Evaluate(statement)
 
-		// Check if the evaluated result is a return object
-		if returnValue, ok := result.(*object.ReturnValue); ok {
-			// Return the object value
-			return returnValue.Value
+		// Check the type of evaluated object
+		switch result := result.(type) {
+
+		// Return Object
+		case *object.ReturnValue:
+			// Return the return value
+			return result.Value
+
+		// Error Object
+		case *object.Error:
+			// Return the error object
+			return result
 		}
 	}
 
@@ -27,6 +34,7 @@ func evalProgram(program *syntaxtree.Program) object.Object {
 	return result
 }
 
+// A function that evaluates a Syntax tree block into an evaluated object
 func evalBlockStatement(block *syntaxtree.BlockStatement) object.Object {
 	// Declare an object
 	var result object.Object
@@ -36,10 +44,16 @@ func evalBlockStatement(block *syntaxtree.BlockStatement) object.Object {
 		// Update the result object
 		result = Evaluate(statement)
 
-		// Check if the evaluated object exists and is a return object
-		if result != nil && result.Type() == object.RETURN_VALUE_OBJ {
-			// Return the evaluated object (return object)
-			return result
+		// Check if result has evaluated object
+		if result != nil {
+			// Retrieve the object type
+			rt := result.Type()
+
+			// Check if the object type is either a Return or an Error
+			if rt == object.RETURN_VALUE_OBJ || rt == object.ERROR_OBJ {
+				// Return the object
+				return result
+			}
 		}
 	}
 
@@ -65,8 +79,8 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 
 	// Unsupported Operator
 	default:
-		// Return null (for now)
-		return NULL
+		// Return Error
+		return object.NewError("unsupported operator: %s%s", operator, right.Type())
 	}
 }
 
@@ -99,8 +113,9 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	// Check that object is an Integer
 	if right.Type() != object.INTEGER_OBJ {
-		// Return null for non integer objects
-		return NULL
+		// Return Error for non integer objects
+		return object.NewError("unsupported operator: -%s", right.Type())
+
 	}
 
 	// Retrieve the value of the Integer object
@@ -125,14 +140,20 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		// Evaluate the objects for '=='
 		return getNativeBoolean(left == right)
 
+	// If both objects are not Integers but the operator is '!='
 	case operator == "!=":
 		// Evaluate the objects for '!='
 		return getNativeBoolean(left != right)
 
+	// If both objects are not of the same type
+	case left.Type() != right.Type():
+		// Return Error
+		return object.NewError("type mismatch: %s %s %s", left.Type(), operator, right.Type())
+
 	// Unsupported combination
 	default:
-		// Return null
-		return NULL
+		// Return Error
+		return object.NewError("unsupported operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
@@ -188,8 +209,8 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 
 	// Unsupported Operator
 	default:
-		// Return null
-		return NULL
+		// Return Error
+		return object.NewError("unsupported operator: %s %s %s", left.Type(), operator, right.Type())
 	}
 }
 
@@ -197,6 +218,11 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 func evalIfExpression(ie *syntaxtree.IfExpression) object.Object {
 	// Evaluate the conditional statement
 	condition := Evaluate(ie.Condition)
+	// Check if evaluated condition is an error
+	if isError(condition) {
+		// Return the error
+		return condition
+	}
 
 	// Check if the condition is truthy
 	if isTruthy(condition) {
