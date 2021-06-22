@@ -7,14 +7,40 @@ import (
 
 // A function that evaluates a set of Syntax tree
 // statements into an evaluated object
-func evalStatements(stmts []syntaxtree.Statement) object.Object {
+func evalProgram(program *syntaxtree.Program) object.Object {
 	// Declare an object
 	var result object.Object
 
 	// Iterate over the program statements
-	for _, statement := range stmts {
+	for _, statement := range program.Statements {
 		// Update the result object
 		result = Evaluate(statement)
+
+		// Check if the evaluated result is a return object
+		if returnValue, ok := result.(*object.ReturnValue); ok {
+			// Return the object value
+			return returnValue.Value
+		}
+	}
+
+	// Return the result object
+	return result
+}
+
+func evalBlockStatement(block *syntaxtree.BlockStatement) object.Object {
+	// Declare an object
+	var result object.Object
+
+	// Iterate over the block statements
+	for _, statement := range block.Statements {
+		// Update the result object
+		result = Evaluate(statement)
+
+		// Check if the evaluated object exists and is a return object
+		if result != nil && result.Type() == object.RETURN_VALUE_OBJ {
+			// Return the evaluated object (return object)
+			return result
+		}
 	}
 
 	// Return the result object

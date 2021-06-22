@@ -19,7 +19,14 @@ func Evaluate(node syntaxtree.Node) object.Object {
 	// Program Node (Tree Root)
 	case *syntaxtree.Program:
 		// Evaluate the statements in the program
-		return evalStatements(node.Statements)
+		return evalProgram(node)
+
+	// Return Statement Node
+	case *syntaxtree.ReturnStatement:
+		// Evaluate the Expression in the return value
+		val := Evaluate(node.ReturnValue)
+		// Return the evaluated return object
+		return &object.ReturnValue{Value: val}
 
 	// Expression Node
 	case *syntaxtree.ExpressionStatement:
@@ -45,7 +52,7 @@ func Evaluate(node syntaxtree.Node) object.Object {
 	// Block Statement Node
 	case *syntaxtree.BlockStatement:
 		// Evaluate the statements in the block
-		return evalStatements(node.Statements)
+		return evalBlockStatement(node)
 
 	// If Expression Node
 	case *syntaxtree.IfExpression:
