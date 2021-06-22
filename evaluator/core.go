@@ -13,18 +13,18 @@ var (
 
 // A function that evaluates a Syntax Tree given a node
 // on it and returns an evaluated object
-func Evaluate(node syntaxtree.Node) object.Object {
+func Evaluate(node syntaxtree.Node, env *object.Environment) object.Object {
 	// Check the type of Syntax Tree Node
 	switch node := node.(type) {
 	// Program Node (Tree Root)
 	case *syntaxtree.Program:
 		// Evaluate the statements in the program
-		return evalProgram(node)
+		return evalProgram(node, env)
 
 	// Return Statement Node
 	case *syntaxtree.ReturnStatement:
 		// Evaluate the Expression in the return value
-		val := Evaluate(node.ReturnValue)
+		val := Evaluate(node.ReturnValue, env)
 
 		// Check if evaluated value is an error
 		if isError(val) {
@@ -38,12 +38,12 @@ func Evaluate(node syntaxtree.Node) object.Object {
 	// Expression Node
 	case *syntaxtree.ExpressionStatement:
 		// Recursive evaluation
-		return Evaluate(node.Expression)
+		return Evaluate(node.Expression, env)
 
 	// Prefix Expression Node
 	case *syntaxtree.PrefixExpression:
 		// Evaluate the expression into an object
-		right := Evaluate(node.Right)
+		right := Evaluate(node.Right, env)
 		// Check if evaluated value is an error
 		if isError(right) {
 			// Return the error
@@ -56,7 +56,7 @@ func Evaluate(node syntaxtree.Node) object.Object {
 	// Infix Expression Node
 	case *syntaxtree.InfixExpression:
 		// Evaluate the left node
-		left := Evaluate(node.Left)
+		left := Evaluate(node.Left, env)
 		// Check if evaluated left value is an error
 		if isError(left) {
 			// Return the error
@@ -64,7 +64,7 @@ func Evaluate(node syntaxtree.Node) object.Object {
 		}
 
 		// Evaluate the right node
-		right := Evaluate(node.Right)
+		right := Evaluate(node.Right, env)
 		// Check if evaluated right value is an error
 		if isError(right) {
 			// Return the error
@@ -77,12 +77,12 @@ func Evaluate(node syntaxtree.Node) object.Object {
 	// Block Statement Node
 	case *syntaxtree.BlockStatement:
 		// Evaluate the statements in the block
-		return evalBlockStatement(node)
+		return evalBlockStatement(node, env)
 
 	// If Expression Node
 	case *syntaxtree.IfExpression:
 		// Evaluate the if expression
-		return evalIfExpression(node)
+		return evalIfExpression(node, env)
 
 	// Integer Literal Node
 	case *syntaxtree.IntegerLiteral:

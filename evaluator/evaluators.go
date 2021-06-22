@@ -6,14 +6,14 @@ import (
 )
 
 // A function that evaluates a Syntax tree program into an evaluated object
-func evalProgram(program *syntaxtree.Program) object.Object {
+func evalProgram(program *syntaxtree.Program, env *object.Environment) object.Object {
 	// Declare an object
 	var result object.Object
 
 	// Iterate over the program statements
 	for _, statement := range program.Statements {
 		// Update the result object
-		result = Evaluate(statement)
+		result = Evaluate(statement, env)
 
 		// Check the type of evaluated object
 		switch result := result.(type) {
@@ -35,14 +35,14 @@ func evalProgram(program *syntaxtree.Program) object.Object {
 }
 
 // A function that evaluates a Syntax tree block into an evaluated object
-func evalBlockStatement(block *syntaxtree.BlockStatement) object.Object {
+func evalBlockStatement(block *syntaxtree.BlockStatement, env *object.Environment) object.Object {
 	// Declare an object
 	var result object.Object
 
 	// Iterate over the block statements
 	for _, statement := range block.Statements {
 		// Update the result object
-		result = Evaluate(statement)
+		result = Evaluate(statement, env)
 
 		// Check if result has evaluated object
 		if result != nil {
@@ -215,9 +215,9 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 }
 
 // A function that evaluates an if expression given an IfExpression syntax tree node
-func evalIfExpression(ie *syntaxtree.IfExpression) object.Object {
+func evalIfExpression(ie *syntaxtree.IfExpression, env *object.Environment) object.Object {
 	// Evaluate the conditional statement
-	condition := Evaluate(ie.Condition)
+	condition := Evaluate(ie.Condition, env)
 	// Check if evaluated condition is an error
 	if isError(condition) {
 		// Return the error
@@ -227,12 +227,12 @@ func evalIfExpression(ie *syntaxtree.IfExpression) object.Object {
 	// Check if the condition is truthy
 	if isTruthy(condition) {
 		// Evaluate the consequence block
-		return Evaluate(ie.Consequence)
+		return Evaluate(ie.Consequence, env)
 
 		// Check if alternate exists
 	} else if ie.Alternative != nil {
 		// Evaluate the alternate consequence block
-		return Evaluate(ie.Alternative)
+		return Evaluate(ie.Alternative, env)
 
 	} else {
 		// Return null

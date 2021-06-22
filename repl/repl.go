@@ -7,6 +7,7 @@ import (
 
 	"github.com/manishmeganathan/tuna/evaluator"
 	"github.com/manishmeganathan/tuna/lexer"
+	"github.com/manishmeganathan/tuna/object"
 	"github.com/manishmeganathan/tuna/parser"
 )
 
@@ -37,6 +38,8 @@ oooooooooooooooooooooooooooooooooooooooooooooooooooooooo~~~~.88
 func StartREPL(in io.Reader, out io.Writer) {
 	// Create a buffered IO scanner
 	scanner := bufio.NewScanner(in)
+	// Create a new execution environment
+	env := object.NewEnvironment()
 
 	for {
 		// Print the REPL line prompt
@@ -63,7 +66,7 @@ func StartREPL(in io.Reader, out io.Writer) {
 		}
 
 		// Evaluate the Program
-		evaluated := evaluator.Evaluate(program)
+		evaluated := evaluator.Evaluate(program, env)
 		// Print the evaluated values if they exist
 		if evaluated != nil {
 			io.WriteString(out, evaluated.Inspect())
