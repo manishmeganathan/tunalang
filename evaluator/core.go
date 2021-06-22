@@ -115,6 +115,8 @@ func Evaluate(node syntaxtree.Node, env *object.Environment) object.Object {
 			return args[0]
 		}
 
+		return applyFunction(function, args)
+
 	// Function Literal Node
 	case *syntaxtree.FunctionLiteral:
 		// Return the Function Object
@@ -187,4 +189,48 @@ func isError(obj object.Object) bool {
 
 	// Return false (null object)
 	return false
+}
+
+// A function that applies a given function object on a slice of object arguments
+func applyFunction(fn object.Object, args []object.Object) object.Object {
+	// Check that the given object is Function Object
+	function, ok := fn.(*object.Function)
+	if !ok {
+		// Return an Error
+		return object.NewError("not a function: %s", fn.Type())
+	}
+
+	// Create the function's extended environment
+	extendedEnv := extendFunctionEnv(function, args)
+	// Evaluate the function body
+	evaluated := Evaluate(function.Body, extendedEnv)
+
+	// Return the unwrapped value
+	return unwrapReturnValue(evaluated)
+}
+
+// A function that creates an extended environment for a function
+func extendFunctionEnv(fn *object.Function, args []object.Object) *object.Environment {
+	// Create a new enclosed enivronment
+	env := object.NewEnclosedEnvironment(fn.Env)
+	// Iterate over the function args
+	for paramIdx, param := range fn.Parameters {
+		// Add the function arg to the enclosed environment
+		env.Set(param.Value, args[paramIdx])
+	}
+
+	// Return the extended environment
+	return env
+}
+
+// A function that unwraps an object into its value if it is a Return Object
+func unwrapReturnValue(obj object.Object) object.Object {
+	// Check if the given object is a Return Object
+	if returnValue, ok := obj.(*object.ReturnValue); ok {
+		// Return the return value
+		return returnValue.Value
+	}
+
+	// Return the object back
+	return obj
 }
