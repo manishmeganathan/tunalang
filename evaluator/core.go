@@ -25,6 +25,13 @@ func Evaluate(node syntaxtree.Node) object.Object {
 	case *syntaxtree.ReturnStatement:
 		// Evaluate the Expression in the return value
 		val := Evaluate(node.ReturnValue)
+
+		// Check if evaluated value is an error
+		if isError(val) {
+			// Return the error
+			return val
+		}
+
 		// Return the evaluated return object
 		return &object.ReturnValue{Value: val}
 
@@ -37,6 +44,12 @@ func Evaluate(node syntaxtree.Node) object.Object {
 	case *syntaxtree.PrefixExpression:
 		// Evaluate the expression into an object
 		right := Evaluate(node.Right)
+		// Check if evaluated value is an error
+		if isError(right) {
+			// Return the error
+			return right
+		}
+
 		// Evaluate the object for the operator
 		return evalPrefixExpression(node.Operator, right)
 
@@ -44,8 +57,20 @@ func Evaluate(node syntaxtree.Node) object.Object {
 	case *syntaxtree.InfixExpression:
 		// Evaluate the left node
 		left := Evaluate(node.Left)
+		// Check if evaluated left value is an error
+		if isError(left) {
+			// Return the error
+			return left
+		}
+
 		// Evaluate the right node
 		right := Evaluate(node.Right)
+		// Check if evaluated right value is an error
+		if isError(right) {
+			// Return the error
+			return right
+		}
+
 		// Evaluate the expression with the objects and the operator
 		return evalInfixExpression(node.Operator, left, right)
 
@@ -109,4 +134,16 @@ func isTruthy(obj object.Object) bool {
 	default:
 		return true
 	}
+}
+
+// A function that returns whether an Object is an Error
+func isError(obj object.Object) bool {
+	// Check if object is non null
+	if obj != nil {
+		// Check the object type for Error
+		return obj.Type() == object.ERROR_OBJ
+	}
+
+	// Return false (null object)
+	return false
 }
