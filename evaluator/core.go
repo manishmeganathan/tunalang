@@ -34,6 +34,20 @@ func Evaluate(node syntaxtree.Node, env *object.Environment) object.Object {
 		// Return the evaluated return object
 		return &object.ReturnValue{Value: val}
 
+		// Let Statement Node
+	case *syntaxtree.LetStatement:
+		// Evaluate the Expression in the let statement
+		val := Evaluate(node.Value, env)
+		// Check if evaluated value is an error
+		if isError(val) {
+			// Return the error
+			return val
+		}
+
+		// Set the evaluated object and the literal
+		// name to the environment store
+		env.Set(node.Name.Value, val)
+
 	// Expression Node
 	case *syntaxtree.ExpressionStatement:
 		// Recursive evaluation
@@ -83,21 +97,32 @@ func Evaluate(node syntaxtree.Node, env *object.Environment) object.Object {
 		// Evaluate the if expression
 		return evalIfExpression(node, env)
 
-	// Let Statement Node
-	case *syntaxtree.LetStatement:
-		// Evaluate the Expression in the let statement
-		val := Evaluate(node.Value, env)
-		// Check if evaluated value is an error
-		if isError(val) {
+	// Call Expression Node
+	case *syntaxtree.CallExpression:
+		// Evaluate the function
+		function := Evaluate(node.Function, env)
+		// Check if the evaluated value is an error
+		if isError(function) {
 			// Return the error
-			return val
+			return function
 		}
 
-		// Set the evaluated object and the literal
-		// name to the environment store
-		env.Set(node.Name.Value, val)
+		// Evaluate the function arguments
+		args := evalExpressions(node.Arguments, env)
+		// Check for errors
+		if len(args) == 1 && isError(args[0]) {
+			// Return the error
+			return args[0]
+		}
 
+	// Function Literal Node
+	case *syntaxtree.FunctionLiteral:
+		// Return the Function Object
+		return &object.Function{Parameters: node.Parameters, Env: env, Body: node.Body}
+
+	// Identifier Literal Node
 	case *syntaxtree.Identifier:
+		// Evaluate the identifier
 		return evalIdentifier(node, env)
 
 	// Integer Literal Node

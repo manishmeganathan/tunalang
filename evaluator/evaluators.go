@@ -253,3 +253,27 @@ func evalIdentifier(node *syntaxtree.Identifier, env *object.Environment) object
 	// Return the value
 	return val
 }
+
+// A function that evaluates a slice of Expression syntax nodes into evaluated objects
+func evalExpressions(exps []syntaxtree.Expression, env *object.Environment) []object.Object {
+	// Declare a result Object slice
+	var result []object.Object
+
+	// Iterate over the expression nodes
+	for _, e := range exps {
+		// Evaluate the expression
+		evaluated := Evaluate(e, env)
+
+		// Check for an error
+		if isError(evaluated) {
+			// Return the error as the first object of the slice
+			return []object.Object{evaluated}
+		}
+
+		// Add the evaluated object into the slice
+		result = append(result, evaluated)
+	}
+
+	// Return the result slice
+	return result
+}
