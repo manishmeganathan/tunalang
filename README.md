@@ -4,8 +4,10 @@ Inspired by and derived from the book **'Writing An Interpreter in Go' by Thorst
 
 ## In Development
 **What's Complete?**  
-- Token Definitions
-- Lexical Analysis
-- Basic REPL interface
-- Abstract Syntax Tree model
-- Pratt Parser
+- The Lexer & Token Defintions
+- The Parser & The Abstract Syntax Tree
+- Tree Walking Evaluator
+- Variable Bindings and Scopes
+- Functions & Closures
+- Integers, String and Booleans
+- Built-in Functions
