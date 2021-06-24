@@ -136,6 +136,11 @@ func Evaluate(node syntaxtree.Node, env *object.Environment) object.Object {
 	case *syntaxtree.BooleanLiteral:
 		// Return the native Boolean Object for the value
 		return getNativeBoolean(node.Value)
+
+	// String Literal Node
+	case *syntaxtree.StringLiteral:
+		// Return the String Object
+		return &object.String{Value: node.Value}
 	}
 
 	// Return nil if not evaluated
