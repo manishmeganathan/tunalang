@@ -298,6 +298,11 @@ func (p *Parser) parseBooleanLiteral() syntaxtree.Expression {
 	return &syntaxtree.BooleanLiteral{Token: p.cursorToken, Value: p.isCursorToken(lexer.TRUE)}
 }
 
+// A method of Parser that parses a String Literal
+func (p *Parser) parseStringLiteral() syntaxtree.Expression {
+	return &syntaxtree.StringLiteral{Token: p.cursorToken, Value: p.cursorToken.Literal}
+}
+
 // A method of Parser that parses Grouped Expressions
 func (p *Parser) parseGroupedExpression() syntaxtree.Expression {
 	// Advance the parse cursor
