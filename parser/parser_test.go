@@ -149,6 +149,26 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	}
 }
 
+func TestStringLiteralExpression(t *testing.T) {
+	input := `"hello world";`
+
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt := program.Statements[0].(*syntaxtree.ExpressionStatement)
+	literal, ok := stmt.Expression.(*syntaxtree.StringLiteral)
+	if !ok {
+		t.Fatalf("exp not *syntaxtree.StringLiteral. got=%T", stmt.Expression)
+	}
+
+	if literal.Value != "hello world" {
+		t.Errorf("literal.Value not %q. got=%q", "hello world", literal.Value)
+	}
+}
+
 func TestParsingPrefixExpressions(t *testing.T) {
 
 	prefixTests := []struct {
