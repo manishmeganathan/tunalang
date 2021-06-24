@@ -85,6 +85,9 @@ func (l *Lexer) NextToken() Token {
 		tok = NewToken(LBRACE, l.ch)
 	case '}':
 		tok = NewToken(RBRACE, l.ch)
+	case '"':
+		tok.Type = STRING
+		tok.Literal = l.ReadString()
 	case 0:
 		// End of File
 		tok.Literal = ""

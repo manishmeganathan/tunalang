@@ -67,3 +67,20 @@ func (l *Lexer) ReadNumber() string {
 	// Extract the number from the input with the start and current position
 	return l.input[position:l.positionCurrent]
 }
+
+// A method of Lexer that reads a string from the lexer input
+func (l *Lexer) ReadString() string {
+	// Retrieve the starting position of the number (after the ")
+	position := l.positionCurrent + 1
+
+	// Iterate over the input until a " is encountered
+	for {
+		l.ReadChar()
+		if l.ch == '"' || l.ch == 0 {
+			break
+		}
+	}
+
+	// Extract the string from the input with the start and current position
+	return l.input[position:l.positionCurrent]
+}
