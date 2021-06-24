@@ -9,7 +9,7 @@ import (
 	"github.com/manishmeganathan/tuna/repl"
 )
 
-const version = "v0.6.0"
+const version = "v0.7.0"
 
 func main() {
 	fmt.Println(repl.TUNA2)
