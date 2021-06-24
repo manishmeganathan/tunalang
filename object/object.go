@@ -14,6 +14,7 @@ const (
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
 	ERROR_OBJ        = "ERROR"
 	FUNCTION_OBJ     = "FUNCTION"
+	BUILTIN_OBJ      = "BUILTIN"
 
 	INTEGER_OBJ = "INTEGER"
 	BOOLEAN_OBJ = "BOOLEAN"
@@ -58,6 +59,21 @@ func (e *Error) Inspect() string { return "ERROR: " + e.Message }
 func NewError(format string, a ...interface{}) *Error {
 	return &Error{Message: fmt.Sprintf(format, a...)}
 }
+
+// A type alias for built in function objects
+type BuiltinFunction func(args ...Object) Object
+
+// A structure that represents a Builtin Function
+type Builtin struct {
+	// Represents the built-in function
+	Fn BuiltinFunction
+}
+
+// A method of Builtin that returns the Builtin function value type
+func (b *Builtin) Type() ObjectType { return BUILTIN_OBJ }
+
+// A method of Builtin that returns the string value of the Builtin function object
+func (b *Builtin) Inspect() string { return "builtin function" }
 
 // A structure that represents a Function object
 type Function struct {
