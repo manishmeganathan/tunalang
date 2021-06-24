@@ -198,20 +198,25 @@ func isError(obj object.Object) bool {
 
 // A function that applies a given function object on a slice of object arguments
 func applyFunction(fn object.Object, args []object.Object) object.Object {
-	// Check that the given object is Function Object
-	function, ok := fn.(*object.Function)
-	if !ok {
+
+	switch fn := fn.(type) {
+
+	case *object.Function:
+		// Create the function's extended environment
+		extendedEnv := extendFunctionEnv(fn, args)
+		// Evaluate the function body
+		evaluated := Evaluate(fn.Body, extendedEnv)
+		// Return the unwrapped value
+		return unwrapReturnValue(evaluated)
+
+	case *object.Builtin:
+		// Call the built-in function with the args
+		return fn.Fn(args...)
+
+	default:
 		// Return an Error
 		return object.NewError("not a function: %s", fn.Type())
 	}
-
-	// Create the function's extended environment
-	extendedEnv := extendFunctionEnv(function, args)
-	// Evaluate the function body
-	evaluated := Evaluate(function.Body, extendedEnv)
-
-	// Return the unwrapped value
-	return unwrapReturnValue(evaluated)
 }
 
 // A function that creates an extended environment for a function

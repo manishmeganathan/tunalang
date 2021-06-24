@@ -264,16 +264,20 @@ func evalIfExpression(ie *syntaxtree.IfExpression, env *object.Environment) obje
 
 // A function that evaluates an identifier literal given an Identifier syntax tree node
 func evalIdentifier(node *syntaxtree.Identifier, env *object.Environment) object.Object {
-	// Retrieve the identifier value from the environment
-	val, ok := env.Get(node.Value)
-	// Check the ok flag
-	if !ok {
-		// Return error when the identifier does not exist in the environment
-		return object.NewError("identifier not found: " + node.Value)
+	// Check and retrieve the identifier value from the environment
+	if val, ok := env.Get(node.Value); ok {
+		// Return the value
+		return val
 	}
 
-	// Return the value
-	return val
+	// Check and retrieve the identifer value from the built-ins
+	if builtin, ok := builtins[node.Value]; ok {
+		// Return the builtin
+		return builtin
+	}
+
+	// Return error when the identifier does not exist in the environment
+	return object.NewError("identifier not found: " + node.Value)
 }
 
 // A function that evaluates a slice of Expression syntax nodes into evaluated objects
