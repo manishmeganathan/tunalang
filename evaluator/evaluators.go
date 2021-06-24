@@ -130,10 +130,15 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 	// Check Parameters
 	switch {
 
-	// If both are objects are Integers
+	// If both objects are Integers
 	case left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ:
 		// Evaluate expression for integer objects
 		return evalIntegerInfixExpression(operator, left, right)
+
+	// If both objects are Strings
+	case left.Type() == object.STRING_OBJ && right.Type() == object.STRING_OBJ:
+		// Evaluate expression for integer objects
+		return evalStringInfixExpression(operator, left, right)
 
 	// If both objects are not Integers but the operator is '=='
 	case operator == "==":
@@ -212,6 +217,23 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 		// Return Error
 		return object.NewError("unsupported operator: %s %s %s", left.Type(), operator, right.Type())
 	}
+}
+
+// A function that evaluates an infix expression between two Strings
+// given a infix operator and the left and right String objects
+func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
+	// Only concatenation is supported
+	if operator != "+" {
+		// Return an error
+		return object.NewError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
+	}
+
+	// Retrieve the left and right integer values
+	leftVal := left.(*object.String).Value
+	rightVal := right.(*object.String).Value
+
+	// Return the String Object
+	return &object.String{Value: leftVal + rightVal}
 }
 
 // A function that evaluates an if expression given an IfExpression syntax tree node
