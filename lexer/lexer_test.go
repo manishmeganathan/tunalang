@@ -24,6 +24,9 @@ if (5 < 10) {
 
 10 == 10;
 10 != 9;
+
+"foobar"
+"foo bar"
 `
 	tests := []struct {
 		expectedType    TokenType
@@ -109,6 +112,9 @@ if (5 < 10) {
 		{NOT_EQ, "!="},
 		{INT, "9"},
 		{SEMICOLON, ";"},
+
+		{STRING, "foobar"},
+		{STRING, "foo bar"},
 
 		{EOF, ""},
 	}
