@@ -61,6 +61,24 @@ func (b *BooleanLiteral) TokenLiteral() string { return b.Token.Literal }
 // A method of BooleanLiteral that returns its string representation
 func (b *BooleanLiteral) String() string { return b.Token.Literal }
 
+// A structure that represents an String literal
+type StringLiteral struct {
+	// Represents the lexological token 'STRING'
+	Token lexer.Token
+
+	// Represents the string value
+	Value string
+}
+
+// A method of StringLiteral to satisfy the Expression interface
+func (il *StringLiteral) expressionNode() {}
+
+// A method of StringLiteral that returns its token literal value
+func (il *StringLiteral) TokenLiteral() string { return il.Token.Literal }
+
+// A method of StringLiteral that returns its string representation
+func (il *StringLiteral) String() string { return il.Token.Literal }
+
 // A structure that represents a Function literal
 type FunctionLiteral struct {
 	// Represents the lexological token 'FN'
