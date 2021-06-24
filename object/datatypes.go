@@ -34,3 +34,15 @@ func (b *Boolean) Type() ObjectType { return BOOLEAN_OBJ }
 
 // A method of Boolean that returns the string value of the Boolean
 func (b *Boolean) Inspect() string { return fmt.Sprintf("%t", b.Value) }
+
+// A structure that represents a String object
+type String struct {
+	// Represents the value of the String
+	Value string
+}
+
+// A method of String that returns the String value type
+func (s *String) Type() ObjectType { return STRING_OBJ }
+
+// A method of String that returns the string value of the String
+func (s *String) Inspect() string { return s.Value }
