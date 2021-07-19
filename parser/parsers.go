@@ -522,3 +522,43 @@ func (p *Parser) parseIndexExpression(left syntaxtree.Expression) syntaxtree.Exp
 	// Return the parsed index expression
 	return exp
 }
+
+// A method of Parser that parses Map literals
+func (p *Parser) parseMapLiteral() syntaxtree.Expression {
+	// Create a map literal node for the syntax tree
+	hash := &syntaxtree.MapLiteral{Token: p.cursorToken}
+	// Initialize a map for key value pairs
+	hash.Pairs = make(map[syntaxtree.Expression]syntaxtree.Expression)
+
+	// Iterate until the next token is the } token
+	for !p.isPeekToken(lexer.RBRACE) {
+		// Advance the parse cursor
+		p.NextToken()
+		// Parse the key expression
+		key := p.parseExpression(LOWEST)
+		// Assert the colon token expected
+		if !p.expectPeek(lexer.COLON) {
+			return nil
+		}
+
+		// Advance the parse cursor
+		p.NextToken()
+		// Parse the value expression
+		value := p.parseExpression(LOWEST)
+		// Assign the key value pair
+		hash.Pairs[key] = value
+
+		// Check if the map either continues or ends
+		if !p.isPeekToken(lexer.RBRACE) && !p.expectPeek(lexer.COMMA) {
+			return nil
+		}
+	}
+
+	// Check if the next token is the } token
+	if !p.expectPeek(lexer.RBRACE) {
+		return nil
+	}
+
+	// Return the parsed map literal
+	return hash
+}
