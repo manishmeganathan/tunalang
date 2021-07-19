@@ -336,3 +336,42 @@ func evalListIndexExpression(list, index object.Object) object.Object {
 	// Return the list element at the index
 	return listObject.Elements[idx]
 }
+
+func evalMapLiteral(node *syntaxtree.MapLiteral, env *object.Environment) object.Object {
+	// Init a new mapping for HashKeys to MapPairs
+	pairs := make(map[object.HashKey]object.MapPair)
+
+	// Iterate keys and values in the map literal
+	for keyNode, valueNode := range node.Pairs {
+		// Evaluate the key
+		key := Evaluate(keyNode, env)
+		// Check for an error
+		if isError(key) {
+			// Return the error
+			return key
+		}
+
+		// Assert that the key is a Hashable
+		hashKey, ok := key.(object.Hashable)
+		if !ok {
+			// Return error
+			return object.NewError("unusable as hash key: %s", key.Type())
+		}
+
+		// Evaluate the value
+		value := Evaluate(valueNode, env)
+		// Check for an error
+		if isError(value) {
+			// Return the error
+			return value
+		}
+
+		// Generate the hash key for the key
+		hashed := hashKey.HashKey()
+		// Create a MapPair for the key and value and add it to the pairs map
+		pairs[hashed] = object.MapPair{Key: key, Value: value}
+	}
+
+	// Create a new HashMap from the pairs map and return it
+	return &object.Map{Pairs: pairs}
+}

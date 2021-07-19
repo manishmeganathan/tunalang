@@ -152,6 +152,11 @@ func Evaluate(node syntaxtree.Node, env *object.Environment) object.Object {
 		// Return the List Object
 		return &object.List{Elements: elements}
 
+	// Map Literal Node
+	case *syntaxtree.MapLiteral:
+		// Evaluate the map literal
+		return evalMapLiteral(node, env)
+
 	// Function Literal Node
 	case *syntaxtree.FunctionLiteral:
 		// Return the Function Object
