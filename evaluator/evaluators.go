@@ -313,6 +313,11 @@ func evalIndexExpression(left, index object.Object) object.Object {
 		// Evaluate the list index expression
 		return evalListIndexExpression(left, index)
 
+	// Check if the left object is a Map
+	case left.Type() == object.MAP_OBJ:
+		// Evaluate the map index expression
+		return evalMapIndexExpression(left, index)
+
 	default:
 		// Return error
 		return object.NewError("index operator not supported: %s", left.Type())
@@ -374,4 +379,27 @@ func evalMapLiteral(node *syntaxtree.MapLiteral, env *object.Environment) object
 
 	// Create a new HashMap from the pairs map and return it
 	return &object.Map{Pairs: pairs}
+}
+
+// A function that evaluates a Map index expression given a Map and a Hashable index
+func evalMapIndexExpression(mapobj, index object.Object) object.Object {
+	// Assert the map object as a Map
+	mapObject := mapobj.(*object.Map)
+
+	// Assert the index object as a Hashable
+	key, ok := index.(object.Hashable)
+	if !ok {
+		// Return error
+		return object.NewError("unusable as hash key: %s", index.Type())
+	}
+
+	// Retrieve the MapPair from the map object for the hash key
+	pair, ok := mapObject.Pairs[key.HashKey()]
+	if !ok {
+		// Return null when not found
+		return NULL
+	}
+
+	// Return the value from the MapPair
+	return pair.Value
 }
