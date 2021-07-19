@@ -87,15 +87,15 @@ type FunctionLiteral struct {
 	// Represent the list of function parameters
 	Parameters []*Identifier
 
-	// Represents the the block of statements in the function
+	// Represents the block of statements in the function
 	Body *BlockStatement
 }
 
 // A method of FunctionLiteral to satisfy the Expression interface
-func (b *FunctionLiteral) expressionNode() {}
+func (fl *FunctionLiteral) expressionNode() {}
 
 // A method of FunctionLiteral that returns its token literal value
-func (b *FunctionLiteral) TokenLiteral() string { return b.Token.Literal }
+func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
 
 // A method of FunctionLiteral that returns its string representation
 func (fl *FunctionLiteral) String() string {
@@ -118,6 +118,44 @@ func (fl *FunctionLiteral) String() string {
 	out.WriteString(") ")
 	// Add the function block of code
 	out.WriteString(fl.Body.String())
+
+	// Return the string from the buffer
+	return out.String()
+}
+
+// A structure that represents a List literal
+type ListLiteral struct {
+	// Represents the lexological token '['
+	Token lexer.Token
+
+	// Represents the slice of array elements
+	Elements []Expression
+}
+
+// A method of ListLiteral to satisfy the Expression interface
+func (ll *ListLiteral) expressionNode() {}
+
+// A method of ListLiteral that returns its token literal value
+func (ll *ListLiteral) TokenLiteral() string { return ll.Token.Literal }
+
+// A method of ArrayLiteral that returns its string representation
+func (ll *ListLiteral) String() string {
+	// Declare a bytes buffer
+	var out bytes.Buffer
+	// Declare an empty slice
+	elements := []string{}
+	// Iterate over the elements of the array literal
+	for _, el := range ll.Elements {
+		// Add element to the list
+		elements = append(elements, el.String())
+	}
+
+	// Start array with the '[' token
+	out.WriteString("[")
+	// Add the array elements as comma separated values
+	out.WriteString(strings.Join(elements, ", "))
+	// Add the ']' token
+	out.WriteString("]")
 
 	// Return the string from the buffer
 	return out.String()
