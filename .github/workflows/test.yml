@@ -1,0 +1,30 @@
+# Workflow Name
+name: Testing
+
+# Workflow Triggers
+on:
+  # Triggered on push to the main branch
+  push:
+    branches: [ main ]
+    
+   # Triggered on manual dispatch
+  workflow_dispatch:
+
+# Workflow Jobs
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    # Checkout Git Repository
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+    
+    # Setup Go on runner
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+    
+    # Run Go tests
+    - name: Run Tests
+      run: go test -v ./...
