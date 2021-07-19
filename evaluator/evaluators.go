@@ -303,3 +303,36 @@ func evalExpressions(exps []syntaxtree.Expression, env *object.Environment) []ob
 	// Return the result slice
 	return result
 }
+
+// A function that evaluates an IndexExpression between a List and an Integer index
+func evalIndexExpression(left, index object.Object) object.Object {
+
+	switch {
+	// Check if the left object is a List and the index is an Integer
+	case left.Type() == object.LIST_OBJ && index.Type() == object.INTEGER_OBJ:
+		// Evaluate the list index expression
+		return evalListIndexExpression(left, index)
+
+	default:
+		// Return error
+		return object.NewError("index operator not supported: %s", left.Type())
+	}
+}
+
+// A function that evaluates a List index expression given a List and an Integer index
+func evalListIndexExpression(list, index object.Object) object.Object {
+	// Assert the list object as a List
+	listObject := list.(*object.List)
+	// Assert the index object as an Integer
+	idx := index.(*object.Integer).Value
+
+	// Check if the index is out of range
+	max := int64(len(listObject.Elements) - 1)
+	if idx < 0 || idx > max {
+		// Return null
+		return NULL
+	}
+
+	// Return the list element at the index
+	return listObject.Elements[idx]
+}
