@@ -2,6 +2,7 @@ package object
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 )
 
@@ -31,6 +32,45 @@ func (l *List) Inspect() string {
 	out.WriteString("[")
 	out.WriteString(strings.Join(elements, ", "))
 	out.WriteString("]")
+
+	// Return the string representation
+	return out.String()
+}
+
+// A structure that represents a Map key-value pair
+type MapPair struct {
+	// Represents the key of the key-value pair
+	Key Object
+	// Represents the value of the key-value pair
+	Value Object
+}
+
+// A structure that represents a Map object
+type Map struct {
+	// Represents the key-value pairs of the map
+	Pairs map[HashKey]MapPair
+}
+
+// A method of Map that returns the Map value type
+func (h *Map) Type() ObjectType { return MAP_OBJ }
+
+// A method of Map that returns the string value of the Map
+func (h *Map) Inspect() string {
+	// Create a string buffer
+	var out bytes.Buffer
+
+	// Declare a slice to accumulate the key value pairs
+	pairs := []string{}
+	// Iterate through the key value pairs
+	for _, pair := range h.Pairs {
+		// Append the string representation of the pair to the slice
+		pairs = append(pairs, fmt.Sprintf("%s: %s", pair.Key.Inspect(), pair.Value.Inspect()))
+	}
+
+	// Join the key value pairs with a comma
+	out.WriteString("{")
+	out.WriteString(strings.Join(pairs, ", "))
+	out.WriteString("}")
 
 	// Return the string representation
 	return out.String()
