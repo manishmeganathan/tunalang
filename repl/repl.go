@@ -43,7 +43,7 @@ func StartREPL(in io.Reader, out io.Writer) {
 
 	for {
 		// Print the REPL line prompt
-		fmt.Fprintf(out, PROMPT)
+		fmt.Fprint(out, PROMPT)
 		// Scan the line
 		scanned := scanner.Scan()
 		if !scanned {
@@ -77,7 +77,7 @@ func StartREPL(in io.Reader, out io.Writer) {
 
 func printParserErrors(out io.Writer, errors []string) {
 	// Print some error header
-	io.WriteString(out, "Woops! We has some trouble parsing!\n")
+	io.WriteString(out, "Whoops! We had some trouble parsing!\n")
 	io.WriteString(out, "parser errors:\n")
 
 	// Iterate over the parser errors and print them out
