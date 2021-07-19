@@ -115,7 +115,29 @@ func Evaluate(node syntaxtree.Node, env *object.Environment) object.Object {
 			return args[0]
 		}
 
+		// Evaluate the function call
 		return applyFunction(function, args)
+
+	// Identifier Expression Node
+	case *syntaxtree.IndexExpression:
+		// Evaluate the left expression
+		left := Evaluate(node.Left, env)
+		// Check if evaluated value is an error
+		if isError(left) {
+			// Return the error
+			return left
+		}
+
+		// Evaluate the index expression
+		index := Evaluate(node.Index, env)
+		// Check if evaluated value is an error
+		if isError(index) {
+			// Return the error
+			return index
+		}
+
+		// Evaluate the index expression
+		return evalIndexExpression(left, index)
 
 	// List Literal Node
 	case *syntaxtree.ListLiteral:
