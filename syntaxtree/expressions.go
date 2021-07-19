@@ -58,10 +58,10 @@ type InfixExpression struct {
 }
 
 // A method of InfixExpression to satisfy the Expression interface
-func (pe *InfixExpression) expressionNode() {}
+func (ie *InfixExpression) expressionNode() {}
 
 // A method of InfixExpression that returns its token literal value
-func (pe *InfixExpression) TokenLiteral() string { return pe.Token.Literal }
+func (ie *InfixExpression) TokenLiteral() string { return ie.Token.Literal }
 
 // A method of InfixExpression that returns its string representation
 func (ie *InfixExpression) String() string {
@@ -97,10 +97,10 @@ type IfExpression struct {
 }
 
 // A method of IfExpression to satisfy the Expression interface
-func (pe *IfExpression) expressionNode() {}
+func (ie *IfExpression) expressionNode() {}
 
 // A method of IfExpression that returns its token literal value
-func (pe *IfExpression) TokenLiteral() string { return pe.Token.Literal }
+func (ie *IfExpression) TokenLiteral() string { return ie.Token.Literal }
 
 // A method of IfExpression that returns its string representation
 func (ie *IfExpression) String() string {
@@ -159,6 +159,42 @@ func (ce *CallExpression) String() string {
 	out.WriteString("(")
 	out.WriteString(strings.Join(args, ", "))
 	out.WriteString(")")
+
+	// Return the string of the buffer
+	return out.String()
+}
+
+// A structure that represents an index expression node on the syntax tree
+type IndexExpression struct {
+	// Represents the [ token
+	Token lexer.Token
+
+	// Represents the indexable expression
+	Left Expression
+
+	// Represents the index of the expression
+	Index Expression
+}
+
+// A method of IndexExpression to satisfy the Expression interface
+func (ie *IndexExpression) expressionNode() {}
+
+// A method of IndexExpression that returns its token literal value
+func (ie *IndexExpression) TokenLiteral() string { return ie.Token.Literal }
+
+// A method of IndexExpression that returns its string representation
+func (ie *IndexExpression) String() string {
+	// Declare a bytes buffer
+	var out bytes.Buffer
+
+	// Start expression with parenthesis
+	out.WriteString("(")
+	// Add the left expression
+	out.WriteString(ie.Left.String())
+	// Add the index
+	out.WriteString("[")
+	out.WriteString(ie.Index.String())
+	out.WriteString("])")
 
 	// Return the string of the buffer
 	return out.String()
