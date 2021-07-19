@@ -90,7 +90,7 @@ map(numbers, fibonacci);
 ```
 
 ## Future Development
-- Unicode Lexer [[#1]](https://github.com/manishmeganathan/tuna/issues/1)
-- Installable Binaries and Automated Release Workflow [[#5]](https://github.com/manishmeganathan/tuna/issues/5)
-- Macro System [[#6]](https://github.com/manishmeganathan/tuna/issues/6)
+- Unicode Lexer [[#1]](https://github.com/manishmeganathan/tunalang/issues/1)
+- Installable Binaries and Automated Release Workflow [[#5]](https://github.com/manishmeganathan/tunalang/issues/5)
+- Macro System [[#6]](https://github.com/manishmeganathan/tunalang/issues/6)
 - Bytecode Compiler and Virtual Machine (Tuna v2)
