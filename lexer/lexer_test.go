@@ -27,6 +27,7 @@ if (5 < 10) {
 
 "foobar"
 "foo bar"
+[1, 2];
 `
 	tests := []struct {
 		expectedType    TokenType
@@ -115,6 +116,13 @@ if (5 < 10) {
 
 		{STRING, "foobar"},
 		{STRING, "foo bar"},
+
+		{LBRACK, "["},
+		{INT, "1"},
+		{COMMA, ","},
+		{INT, "2"},
+		{RBRACK, "]"},
+		{SEMICOLON, ";"},
 
 		{EOF, ""},
 	}
