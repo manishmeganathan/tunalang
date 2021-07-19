@@ -9,5 +9,6 @@ Inspired by and derived from the book **'Writing An Interpreter in Go' by Thorst
 - Tree Walking Evaluator
 - Variable Bindings and Scopes
 - Functions & Closures
-- Integers, String and Booleans
 - Built-in Functions
+- Integers, String and Booleans
+- Lists
