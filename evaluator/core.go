@@ -117,6 +117,19 @@ func Evaluate(node syntaxtree.Node, env *object.Environment) object.Object {
 
 		return applyFunction(function, args)
 
+	// List Literal Node
+	case *syntaxtree.ListLiteral:
+		// Evaluate the list literal elements
+		elements := evalExpressions(node.Elements, env)
+		// Check for errors
+		if len(elements) == 1 && isError(elements[0]) {
+			// Return the error
+			return elements[0]
+		}
+
+		// Return the List Object
+		return &object.List{Elements: elements}
+
 	// Function Literal Node
 	case *syntaxtree.FunctionLiteral:
 		// Return the Function Object
