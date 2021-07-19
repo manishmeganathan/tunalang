@@ -19,6 +19,8 @@ const (
 	INTEGER_OBJ = "INTEGER"
 	BOOLEAN_OBJ = "BOOLEAN"
 	STRING_OBJ  = "STRING"
+
+	LIST_OBJ = "LIST"
 )
 
 // A type alias that represents the type of an object
