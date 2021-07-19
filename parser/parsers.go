@@ -17,7 +17,7 @@ const (
 	PRODUCT     // *
 	PREFIX      // -X or !X
 	CALL        // myFunction(X)
-	INDEX       // myArray[X]
+	INDEX       // myList[X]
 )
 
 var precedences = map[lexer.TokenType]int{
@@ -59,12 +59,8 @@ func (p *Parser) ParseProgram() *syntaxtree.Program {
 	for !p.isCursorToken(lexer.EOF) {
 		// Parse the current token into a statement
 		stmt := p.parseStatement()
-		// Check if the statement exists
-		if stmt != nil {
-			// Add the statement to the syntax tree program statements
-			program.Statements = append(program.Statements, stmt)
-		}
-
+		// Add the statement to the syntax tree program statements
+		program.Statements = append(program.Statements, stmt)
 		// Advance the parse cursor
 		p.NextToken()
 	}
@@ -334,12 +330,8 @@ func (p *Parser) parseBlockStatement() *syntaxtree.BlockStatement {
 	for !p.isCursorToken(lexer.RBRACE) && !p.isCursorToken(lexer.EOF) {
 		// Parse the statement
 		stmt := p.parseStatement()
-		// Check the parsed statement
-		if stmt != nil {
-			// Add it the to block statements
-			block.Statements = append(block.Statements, stmt)
-		}
-
+		// Add it the to block statements
+		block.Statements = append(block.Statements, stmt)
 		// Advance the parse cursor
 		p.NextToken()
 	}
@@ -505,12 +497,12 @@ func (p *Parser) parseCallExpression(function syntaxtree.Expression) syntaxtree.
 // A method of Parser that parses List literals
 func (p *Parser) parseListLiteral() syntaxtree.Expression {
 	// Create a list literal node for the syntax tree
-	array := &syntaxtree.ListLiteral{Token: p.cursorToken}
-	// Parse the expression for the array elements
-	array.Elements = p.parseExpressionList(lexer.RBRACK)
+	list := &syntaxtree.ListLiteral{Token: p.cursorToken}
+	// Parse the expression for the list elements
+	list.Elements = p.parseExpressionList(lexer.RBRACK)
 
-	// Return the parsed array literal
-	return array
+	// Return the parsed list literal
+	return list
 }
 
 // A method of Parser that parses Index expressions

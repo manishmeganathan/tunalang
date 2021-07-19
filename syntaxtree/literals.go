@@ -128,7 +128,7 @@ type ListLiteral struct {
 	// Represents the lexological token '['
 	Token lexer.Token
 
-	// Represents the slice of array elements
+	// Represents the slice of list elements
 	Elements []Expression
 }
 
@@ -138,21 +138,21 @@ func (ll *ListLiteral) expressionNode() {}
 // A method of ListLiteral that returns its token literal value
 func (ll *ListLiteral) TokenLiteral() string { return ll.Token.Literal }
 
-// A method of ArrayLiteral that returns its string representation
+// A method of ListLiteral that returns its string representation
 func (ll *ListLiteral) String() string {
 	// Declare a bytes buffer
 	var out bytes.Buffer
 	// Declare an empty slice
 	elements := []string{}
-	// Iterate over the elements of the array literal
+	// Iterate over the elements of the list literal
 	for _, el := range ll.Elements {
 		// Add element to the list
 		elements = append(elements, el.String())
 	}
 
-	// Start array with the '[' token
+	// Start list with the '[' token
 	out.WriteString("[")
-	// Add the array elements as comma separated values
+	// Add the list elements as comma separated values
 	out.WriteString(strings.Join(elements, ", "))
 	// Add the ']' token
 	out.WriteString("]")

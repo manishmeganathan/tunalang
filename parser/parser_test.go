@@ -631,7 +631,7 @@ func TestCallExpressionParameterParsing(t *testing.T) {
 	}
 }
 
-func TestParsingArrayLiterals(t *testing.T) {
+func TestParsingListLiterals(t *testing.T) {
 	input := "[1, 2 * 2, 3 + 3]"
 
 	l := lexer.NewLexer(input)
@@ -645,22 +645,22 @@ func TestParsingArrayLiterals(t *testing.T) {
 		t.Fatalf("statement not syntaxtree.ExpressionStatement. got=%T", stmt.Expression)
 	}
 
-	array, ok := stmt.Expression.(*syntaxtree.ListLiteral)
+	list, ok := stmt.Expression.(*syntaxtree.ListLiteral)
 	if !ok {
-		t.Fatalf("exp not syntaxtree.ArrayLiteral. got=%T", stmt.Expression)
+		t.Fatalf("exp not syntaxtree.ListLiteral. got=%T", stmt.Expression)
 	}
 
-	if len(array.Elements) != 3 {
-		t.Fatalf("len(array.Elements) not 3. got=%d", len(array.Elements))
+	if len(list.Elements) != 3 {
+		t.Fatalf("len(list.Elements) not 3. got=%d", len(list.Elements))
 	}
 
-	testIntegerLiteral(t, array.Elements[0], 1)
-	testInfixExpression(t, array.Elements[1], 2, "*", 2)
-	testInfixExpression(t, array.Elements[2], 3, "+", 3)
+	testIntegerLiteral(t, list.Elements[0], 1)
+	testInfixExpression(t, list.Elements[1], 2, "*", 2)
+	testInfixExpression(t, list.Elements[2], 3, "+", 3)
 }
 
 func TestParsingIndexExpressions(t *testing.T) {
-	input := "myArray[1 + 1]"
+	input := "myList[1 + 1]"
 
 	l := lexer.NewLexer(input)
 	p := NewParser(l)
@@ -678,7 +678,7 @@ func TestParsingIndexExpressions(t *testing.T) {
 		t.Fatalf("exp not *syntaxtree.IndexExpression. got=%T", stmt.Expression)
 	}
 
-	if !testIdentifier(t, indexExp.Left, "myArray") {
+	if !testIdentifier(t, indexExp.Left, "myList") {
 		return
 	}
 
