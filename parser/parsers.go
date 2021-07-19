@@ -452,41 +452,41 @@ func (p *Parser) parseFunctionLiteral() syntaxtree.Expression {
 	return lit
 }
 
-// A method of Parser that parses Call expression arguments
-func (p *Parser) parseCallArguments() []syntaxtree.Expression {
+// A method of Parser that parses a list of expressions
+func (p *Parser) parseExpressionList(end lexer.TokenType) []syntaxtree.Expression {
 	// Initialize a slice of expression nodes
-	args := []syntaxtree.Expression{}
+	list := []syntaxtree.Expression{}
 
-	// Check if the next token is a ) token
-	if p.isPeekToken(lexer.RPAREN) {
+	// Check if the next token is the end token
+	if p.isPeekToken(end) {
 		// Advance the parse cursor
 		p.NextToken()
-		// Return the empty list of arguments
-		return args
+		// Return the empty list of expressions
+		return list
 	}
 
 	// Advance the parse cursor
 	p.NextToken()
-	// Append the parsed arg to the arg list
-	args = append(args, p.parseExpression(LOWEST))
+	// Append the parsed expression to the list
+	list = append(list, p.parseExpression(LOWEST))
 
-	// Iterate until the next token is a comma
+	// Iterate as long as the next token is not the end token
 	for p.isPeekToken(lexer.COMMA) {
 		// Advance the parse cursor twice (skip over the comma)
 		p.NextToken()
 		p.NextToken()
 
-		// Append the parsed args into the arg list
-		args = append(args, p.parseExpression(LOWEST))
+		// Append the parsed expression to the list
+		list = append(list, p.parseExpression(LOWEST))
 	}
 
-	// Check if the next token is )
-	if !p.expectPeek(lexer.RPAREN) {
+	// Check if the next token is the end token
+	if !p.expectPeek(end) {
 		return nil
 	}
 
-	// Return the parsed call arguments
-	return args
+	// Return the parsed list of expressions
+	return list
 }
 
 // A method of Parser that parses Call expression
@@ -494,8 +494,19 @@ func (p *Parser) parseCallExpression(function syntaxtree.Expression) syntaxtree.
 	// Create a call expression node for the syntax tree
 	exp := &syntaxtree.CallExpression{Token: p.cursorToken, Function: function}
 	// Parse the call arguments
-	exp.Arguments = p.parseCallArguments()
+	exp.Arguments = p.parseExpressionList(lexer.RPAREN)
 
 	// Return the parsed call expression
 	return exp
+}
+
+// A method of Parser that parses List literals
+func (p *Parser) parseListLiteral() syntaxtree.Expression {
+	// Create a list literal node for the syntax tree
+	array := &syntaxtree.ListLiteral{Token: p.cursorToken}
+	// Parse the expression for the array elements
+	array.Elements = p.parseExpressionList(lexer.RBRACK)
+
+	// Return the parsed array literal
+	return array
 }
