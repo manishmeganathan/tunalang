@@ -68,6 +68,7 @@ func NewParser(l *lexer.Lexer) *Parser {
 	p.registerInfix(lexer.LT, p.parseInfixExpression)
 	p.registerInfix(lexer.GT, p.parseInfixExpression)
 	p.registerInfix(lexer.LPAREN, p.parseCallExpression)
+	p.registerInfix(lexer.LBRACK, p.parseIndexExpression)
 
 	// Advance two tokens such that cursorToken
 	// and peekToken are both set

@@ -17,6 +17,7 @@ const (
 	PRODUCT     // *
 	PREFIX      // -X or !X
 	CALL        // myFunction(X)
+	INDEX       // myArray[X]
 )
 
 var precedences = map[lexer.TokenType]int{
@@ -29,6 +30,7 @@ var precedences = map[lexer.TokenType]int{
 	lexer.SLASH:    PRODUCT,
 	lexer.ASTERISK: PRODUCT,
 	lexer.LPAREN:   CALL,
+	lexer.LBRACK:   INDEX,
 }
 
 var traceON = false
@@ -489,7 +491,7 @@ func (p *Parser) parseExpressionList(end lexer.TokenType) []syntaxtree.Expressio
 	return list
 }
 
-// A method of Parser that parses Call expression
+// A method of Parser that parses Call expressions
 func (p *Parser) parseCallExpression(function syntaxtree.Expression) syntaxtree.Expression {
 	// Create a call expression node for the syntax tree
 	exp := &syntaxtree.CallExpression{Token: p.cursorToken, Function: function}
@@ -509,4 +511,22 @@ func (p *Parser) parseListLiteral() syntaxtree.Expression {
 
 	// Return the parsed array literal
 	return array
+}
+
+// A method of Parser that parses Index expressions
+func (p *Parser) parseIndexExpression(left syntaxtree.Expression) syntaxtree.Expression {
+	// Create an index expression node for the syntax tree
+	exp := &syntaxtree.IndexExpression{Token: p.cursorToken, Left: left}
+
+	// Advance the parse cursor
+	p.NextToken()
+	// Parse the expression for the index
+	exp.Index = p.parseExpression(LOWEST)
+	// Check for the ] token
+	if !p.expectPeek(lexer.RBRACK) {
+		return nil
+	}
+
+	// Return the parsed index expression
+	return exp
 }
