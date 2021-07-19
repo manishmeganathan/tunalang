@@ -21,6 +21,7 @@ const (
 	STRING_OBJ  = "STRING"
 
 	LIST_OBJ = "LIST"
+	MAP_OBJ  = "MAP"
 )
 
 // A type alias that represents the type of an object
@@ -30,6 +31,20 @@ type ObjectType string
 type Object interface {
 	Type() ObjectType
 	Inspect() string
+}
+
+// A structure that represents a HashKey object
+type HashKey struct {
+	// Represents the hash key type
+	Type ObjectType
+
+	// Represents the hash key value
+	Value uint64
+}
+
+// An interface implemented by objects that can be hashed
+type Hashable interface {
+	HashKey() HashKey
 }
 
 // A structure that represents a Returned object
