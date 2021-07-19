@@ -160,3 +160,39 @@ func (ll *ListLiteral) String() string {
 	// Return the string from the buffer
 	return out.String()
 }
+
+// A structure that represents a Map literal
+type MapLiteral struct {
+	// Represents the lexological token '{'
+	Token lexer.Token
+
+	// Represents the key-value pairs of the mapping
+	Pairs map[Expression]Expression
+}
+
+// A method of MapLiteral to satisfy the Expression interface
+func (ml *MapLiteral) expressionNode() {}
+
+// A method of MapLiteral that returns its token literal value
+func (ml *MapLiteral) TokenLiteral() string { return ml.Token.Literal }
+
+// A method of MapLiteral that returns its string representation
+func (ml *MapLiteral) String() string {
+	// Declare a bytes buffer
+	var out bytes.Buffer
+	// Declare an empty slice
+	pairs := []string{}
+	// Iterate over the key-value pairs of the map literal
+	for key, value := range ml.Pairs {
+		// Add pair to the list
+		pairs = append(pairs, key.String()+":"+value.String())
+	}
+
+	// Start map with the '{' token
+	out.WriteString("{")
+	out.WriteString(strings.Join(pairs, ", "))
+	out.WriteString("}")
+
+	// Return the string from the buffer
+	return out.String()
+}
