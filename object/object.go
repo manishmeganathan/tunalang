@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/manishmeganathan/tuna/syntaxtree"
+	"github.com/manishmeganathan/tunalang/syntaxtree"
 )
 
 const (

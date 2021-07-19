@@ -1,8 +1,8 @@
 package evaluator
 
 import (
-	"github.com/manishmeganathan/tuna/object"
-	"github.com/manishmeganathan/tuna/syntaxtree"
+	"github.com/manishmeganathan/tunalang/object"
+	"github.com/manishmeganathan/tunalang/syntaxtree"
 )
 
 // A function that evaluates a Syntax tree program into an evaluated object

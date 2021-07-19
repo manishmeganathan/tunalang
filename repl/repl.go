@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/manishmeganathan/tuna/evaluator"
-	"github.com/manishmeganathan/tuna/lexer"
-	"github.com/manishmeganathan/tuna/object"
-	"github.com/manishmeganathan/tuna/parser"
+	"github.com/manishmeganathan/tunalang/evaluator"
+	"github.com/manishmeganathan/tunalang/lexer"
+	"github.com/manishmeganathan/tunalang/object"
+	"github.com/manishmeganathan/tunalang/parser"
 )
 
 const PROMPT = ">> "

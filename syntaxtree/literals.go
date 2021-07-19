@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/manishmeganathan/tuna/lexer"
+	"github.com/manishmeganathan/tunalang/lexer"
 )
 
 // A structure that represents an Identifier literal

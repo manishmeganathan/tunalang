@@ -3,8 +3,8 @@ package parser
 import (
 	"fmt"
 
-	"github.com/manishmeganathan/tuna/lexer"
-	"github.com/manishmeganathan/tuna/syntaxtree"
+	"github.com/manishmeganathan/tunalang/lexer"
+	"github.com/manishmeganathan/tunalang/syntaxtree"
 )
 
 // A structure that represents a Parser

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/manishmeganathan/tuna/lexer"
-	"github.com/manishmeganathan/tuna/syntaxtree"
+	"github.com/manishmeganathan/tunalang/lexer"
+	"github.com/manishmeganathan/tunalang/syntaxtree"
 )
 
 func TestLetStatements(t *testing.T) {

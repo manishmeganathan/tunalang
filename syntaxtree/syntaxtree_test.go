@@ -3,7 +3,7 @@ package syntaxtree
 import (
 	"testing"
 
-	"github.com/manishmeganathan/tuna/lexer"
+	"github.com/manishmeganathan/tunalang/lexer"
 )
 
 func TestString(t *testing.T) {

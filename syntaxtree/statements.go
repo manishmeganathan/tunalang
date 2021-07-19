@@ -3,7 +3,7 @@ package syntaxtree
 import (
 	"bytes"
 
-	"github.com/manishmeganathan/tuna/lexer"
+	"github.com/manishmeganathan/tunalang/lexer"
 )
 
 // A structure that represents a Let statement token

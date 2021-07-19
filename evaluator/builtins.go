@@ -3,7 +3,7 @@ package evaluator
 import (
 	"fmt"
 
-	"github.com/manishmeganathan/tuna/object"
+	"github.com/manishmeganathan/tunalang/object"
 )
 
 var builtins = map[string]*object.Builtin{

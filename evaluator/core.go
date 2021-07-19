@@ -1,8 +1,8 @@
 package evaluator
 
 import (
-	"github.com/manishmeganathan/tuna/object"
-	"github.com/manishmeganathan/tuna/syntaxtree"
+	"github.com/manishmeganathan/tunalang/object"
+	"github.com/manishmeganathan/tunalang/syntaxtree"
 )
 
 var (

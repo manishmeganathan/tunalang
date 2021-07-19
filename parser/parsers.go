@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/manishmeganathan/tuna/lexer"
-	"github.com/manishmeganathan/tuna/syntaxtree"
+	"github.com/manishmeganathan/tunalang/lexer"
+	"github.com/manishmeganathan/tunalang/syntaxtree"
 )
 
 const (

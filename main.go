@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/manishmeganathan/tuna/repl"
+	"github.com/manishmeganathan/tunalang/repl"
 )
 
 const version = "v0.7.0"
