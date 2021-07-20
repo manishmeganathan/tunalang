@@ -1,0 +1,41 @@
+# Workflow Name
+name: GitHub Release
+
+# Workflow Triggers
+on:
+  # Triggered on push of a new version tag
+  push:
+    tags:
+      - 'v*.*.*'
+
+# Workflow Jobs
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout Git Repository
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Set Tag Environment Variable
+      - name: Set Tag Environment Value
+        run: echo "TAG_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      # Setup Go on runner
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+
+      # Cross-Compile Binaries for all platforms
+      - name: Cross-Compile Binaries
+        run: make build-all
+
+      # Create GitHub Release
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          name: "Tunalang ${{ env.TAG_VERSION }}"
+          bodyFile: "RELEASE.md"
+          artifacts: "bin/*"
+          token: ${{ secrets.GITHUB_TOKEN }}
