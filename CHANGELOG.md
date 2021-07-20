@@ -1,5 +1,10 @@
 # Changelog
 
+### v1.0
+- Automated release workflow (repository)
+- Makefile for cross-compilation, installation and testing.
+- Updated README for status badges, installation instructions, etc.
+
 ### v0.9
 - Map data type
 - Updated README with language docs and examples
