@@ -3,13 +3,13 @@
 
 A dynamically typed, interpreted programming language.
 
-**Version: 0.9.0**  
+**Version: 1.0.0**  
 **License: MIT**
 
 ## Overview
 **Tuna** is a dynamically typed, interpreted programming language. This project is heavily inspired by and derived from the books **'Writing An Interpreter in Go'** & **'Writing A Compiler in Go'** by **Thorsten Ball** and the *Monkey* programming language.
 
-As of *v0.9*, the language is fully functional as interpreter and supports functionality such as
+As of *v1.0*, the language is fully functional as interpreter and supports functionality such as
 - Simple data types - **Integers**, **Strings** and **Booleans**.
 - Compound data types - **Lists** and **Maps**.
 - **Prefix**, **Infix** and **Index** operations.
@@ -19,9 +19,42 @@ As of *v0.9*, the language is fully functional as interpreter and supports funct
 - Simple **Built-In** functions.
 
 ## Usage
-The only way to use **Tuna** currently is through the REPL (this will change).
-1. Clone this repository and change into the root directory.
-2. Use ``go run main.go`` to launch the **Tuna REPL**.
+The only way to use **Tunalang** currently is through the REPL (this will change).
+1. [Install](#installation) **Tunalang** .
+2. Run ``tunalang`` to start the **Tuna REPL**.
+3. Code Away!
+
+## Installation
+
+### From Binary
+
+1. Download the binary for the target platform from the latest release. All **Tunalang** releases are available [here](https://github.com/manishmeganathan/tunalang/releases).
+2. Save the binary to a directory of choice.
+3. Add the path to that directory to the ``PATH`` environment variable.
+4. **Tunalang** is now install and can be invoked using the ``tunalang`` command.
+
+Note: If a binary is not availabe for your platform. Raise an issue or install from source. Any platform that is supported by the Go runtime will support **Tuna**.
+
+### From Source
+
+Installing from source requires an installation of **Git** and **Go** v1.16+. An installation of **Make** is useful but not necessary. **Make** for Windows is available on Chocolatey and can be installed with ``choco install make``.  
+
+1. Clone the repository and change directory into it.
+```
+git clone https://github.com/manishmeganathan/tunalang.git 
+cd tunalang
+```
+2. Compile and Install the binary.
+
+If the ``make`` command is available, run the following.
+```
+make install
+```
+Otherwise, run this.
+```
+go install .
+```
+3. **Tunalang** is now install and can be invoked using the ``tunalang`` command. Some platform might require a manual configuration for the Go binary source to be added to path.
 
 ## Components
 
@@ -40,24 +73,23 @@ The read-eval-print loop accepts an input and interprets/evaluates it on the fly
 
 ## Examples
 ```bash
-let name = "Monkey";
-let age = 1;
-let inspirations = ["Scheme", "Lisp", "JavaScript", "Clojure"];
-let book = {
-    "title": "Writing A Compiler In Go",
-    "author": "Thorsten Ball",
-    "prequel": "Writing An Interpreter In Go"
+let name = "Tunalang";
+let inspirations = ["Monkey", "Rust", "Wren"];
+
+let data = {
+    "name": name,
+    "version": "v1.0.0"
 };
 
-let printBookName = fn(book) {
-    let title = book["title"];
-    let author = book["author"];
+let printdata = fn(data) {
+    let name = data["name"];
+    let version = data["version"];
 
-    puts(author + " - " + title);
+    puts(name + " - " + version);
 };
 
-printBookName(book);
-# => prints: "Thorsten Ball - Writing A Compiler In Go"
+printdata(book);
+# => prints: "Tunalang - v1.0.0"
 ```
 
 ```bash
@@ -91,6 +123,5 @@ map(numbers, fibonacci);
 
 ## Future Development
 - Unicode Lexer [[#1]](https://github.com/manishmeganathan/tunalang/issues/1)
-- Installable Binaries and Automated Release Workflow [[#5]](https://github.com/manishmeganathan/tunalang/issues/5)
 - Macro System [[#6]](https://github.com/manishmeganathan/tunalang/issues/6)
 - Bytecode Compiler and Virtual Machine (Tuna v2)
