@@ -1,5 +1,5 @@
 # Workflow Name
-name: Testing
+name: Go Tests
 
 # Workflow Triggers
 on:
@@ -27,4 +27,4 @@ jobs:
     
     # Run Go tests
     - name: Run Tests
-      run: go test -v ./...
+      run: make test
