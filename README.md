@@ -3,8 +3,17 @@
 
 A dynamically typed, interpreted programming language.
 
-**Version: 1.0.0**  
-**License: MIT**
+![latest tag (SemVer)](https://img.shields.io/github/v/tag/manishmeganathan/tunalang?color=brightgreen&label=latest%20tag&sort=semver)
+![latest release (SemVer)](https://img.shields.io/github/v/release/manishmeganathan/tunalang?color=brightgreen&label=latest%20release&sort=semver)
+![License](https://img.shields.io/github/license/manishmeganathan/tunalang)
+![Go Version](https://img.shields.io/github/go-mod/go-version/manishmeganathan/tunalang)
+![Test Status](https://img.shields.io/github/workflow/status/manishmeganathan/tunalang/Go%20Tests?label=tests&style=plastic)
+![Issues](https://img.shields.io/github/issues/manishmeganathan/tunalang)
+
+### Supported Platforms
+![Windows Support](https://img.shields.io/badge/platform-windows-blue)
+![MacOSX Support](https://img.shields.io/badge/platform-macosx-blue)
+![Linux Support](https://img.shields.io/badge/platform-linux-blue)
 
 ## Overview
 **Tuna** is a dynamically typed, interpreted programming language. This project is heavily inspired by and derived from the books **'Writing An Interpreter in Go'** & **'Writing A Compiler in Go'** by **Thorsten Ball** and the *Monkey* programming language.
